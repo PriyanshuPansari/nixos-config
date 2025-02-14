@@ -5,11 +5,16 @@
 };
   outputs = { self, nixpkgs, xremap }@inputs: {
     # replace 'joes-desktop' with your hostname here.
-    nixosConfigurations.PandorasBox = nixpkgs.lib.nixosSystem {
+    nixosConfigurations ={
+
+    PandorasBox = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = { inherit inputs; };
       modules = [
+      ./hosts/PandorasBox/default.nix
       ./configuration.nix ];
     };
+  };
+
   };
 }
