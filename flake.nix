@@ -14,7 +14,6 @@
       ./hosts/PandorasBox/default.nix
       ./configuration.nix ];
     };
-  };
 
     Hope = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
@@ -23,5 +22,6 @@
       ./hosts/Hope/default.nix
       ./configuration.nix ];
     };
+  };
   };
 }
