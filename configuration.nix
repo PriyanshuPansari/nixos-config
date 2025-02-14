@@ -183,6 +183,12 @@ services.kanata = {
     packages = with pkgs; [];
   };
 
+  users.users.God = {
+    isNormalUser = true;
+    description = "PriyanshuPansari";
+    extraGroups = [ "networkmanager" "wheel" ];
+    packages = with pkgs; [];
+  };
   # Enable automatic login for the user.
   services.getty.autologinUser = "undead";
 
