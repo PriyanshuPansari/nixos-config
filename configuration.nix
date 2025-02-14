@@ -175,22 +175,6 @@ services.kanata = {
     variant = "";
   };
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.undead = {
-    isNormalUser = true;
-    description = "PriyanshuPansari";
-    extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs; [];
-  };
-
-  users.users.God = {
-    isNormalUser = true;
-    description = "PriyanshuPansari";
-    extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs; [];
-  };
-  # Enable automatic login for the user.
-  services.getty.autologinUser = "undead";
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
