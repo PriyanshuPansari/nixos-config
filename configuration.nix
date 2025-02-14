@@ -4,11 +4,6 @@
 
 { config, lib, pkgs, inputs,  ... }:
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      # inputs.xremap.nixosModules.default
-    ];
     nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
 hardware.graphics = {
@@ -154,7 +149,6 @@ services.kanata = {
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "PandorasBox"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
