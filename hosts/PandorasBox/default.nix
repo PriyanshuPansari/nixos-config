@@ -11,7 +11,7 @@
     isNormalUser = true;
     description = "PriyanshuPansari";
     extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs; [];
+    # packages = with pkgs; [];
   };
 
 
