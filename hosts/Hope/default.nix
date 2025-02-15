@@ -12,6 +12,6 @@
     extraGroups = [ "networkmanager" "wheel" ];
     # packages = with pkgs; [];
   };
-    services.getty.autologinUser = "undead";
+    services.getty.autologinUser = "pandora";
 
 }

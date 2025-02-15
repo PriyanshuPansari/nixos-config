@@ -54,7 +54,7 @@ hardware.nvidia = {
 	powerManagement.finegrained = false;
 	open = true;
 	nvidiaSettings = true;
-	dynamicBoost.enable = true;
+	dynamicBoost.enable = false;
 	package = config.boot.kernelPackages.nvidiaPackages.beta;
 };
   hardware.nvidia.prime = {
