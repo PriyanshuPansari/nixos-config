@@ -1,9 +1,9 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    xremap.url = "github:xremap/nix-flake/master";
+    sops-nix.url = "github:Mic92/sops-nix";
 };
-  outputs = { self, nixpkgs, xremap }@inputs: {
+  outputs = { self, nixpkgs, sops-nix }@inputs: {
     # replace 'joes-desktop' with your hostname here.
     nixosConfigurations ={
 
@@ -11,6 +11,7 @@
       system = "x86_64-linux";
       specialArgs = { inherit inputs; };
       modules = [
+       sops-nix.nixosModules.sops
       ./hosts/PandorasBox/default.nix
       ./configuration.nix ];
     };
@@ -19,6 +20,7 @@
       system = "x86_64-linux";
       specialArgs = { inherit inputs; };
       modules = [
+       sops-nix.nixosModules.sops
       ./hosts/Hope/default.nix
       ./configuration.nix ];
     };
