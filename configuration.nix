@@ -5,6 +5,12 @@
 { config, lib, pkgs, inputs,  ... }:
 {
     nix.settings.experimental-features = [ "nix-command" "flakes" ];
+imports = 
+[
+inputs.sops-nix.nixosModules.sops
+];
+
+# systemd.user.enable = true;
 
 hardware.graphics = {
 	enable =true;
@@ -15,9 +21,25 @@ services.xserver.videoDrivers = ["nvidia"];
 services.fstrim.enable = true;
 programs.neovim = {
 
-  enable = true;
+  enable = true; 
   defaultEditor = true;
 };
+sops.defaultSopsFile = ./secrets/github_ssh.yaml;
+sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+sops.age.keyFile = "/var/lib/sops-nix/key.txt";
+
+sops.age.generateKey = true;
+ # sops.secrets.github_ssh_key = {
+ #    key = "github_ssh_key";
+ #    path = "/root/.ssh/github_id_ed25519";
+ #    owner = "root";
+ #    group = "root";
+ #    mode = "0600";
+ #  };
+   sops.secrets.github_ssh_key = {
+    path = "/home/undead/.ssh/id_ed25519";
+    owner = "undead";
+  };
  hardware.nvidia-container-toolkit.enable = true;
 xdg.mime.defaultApplications = {
 
@@ -184,9 +206,11 @@ services.kanata = {
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    sops
     libreoffice
     distrobox
     swww
+    eza
     uv
     wget
     git
@@ -263,6 +287,36 @@ fonts.packages = with pkgs; [
     '';
   };
 
+  systemd.user.services.ssh-add-github = {
+    description = "Add GitHub SSH key to ssh-agent";
+    wantedBy = [ "default.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.openssh}/bin/ssh-add /home/undead/.ssh/id_ed25519";
+      RemainAfterExit = true;
+    };
+  };
+system.activationScripts.generateGitHubPubKey = {
+  text = ''
+    #!/bin/sh
+    # Ensure the .ssh directory exists for the user “undead”
+    mkdir -p /home/undead/.ssh
+
+    # If the public key is not already present, generate it
+    if [ ! -f /home/undead/.ssh/id_ed25519.pub ]; then
+      echo "Generating public key from decrypted private key..."
+      ${pkgs.openssh}/bin/ssh-keygen -y -f /home/undead/.ssh/id_ed25519 > /home/undead/.ssh/id_ed25519.pub
+      
+      # Replace the default comment (e.g., root@hostname) with the desired email
+      
+      # Set correct ownership and permissions (assuming the primary group for "undead" is "users")
+      chown undead:users /home/undead/.ssh/id_ed25519.pub
+      chmod 644 /home/undead/.ssh/id_ed25519.pub
+      ${pkgs.gnused}/bin/sed -i 's/ [^ ]*$/ priyanshu.pansari@gmail.com/' /home/undead/.ssh/id_ed25519.pub
+
+    fi
+  '';
+};
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
