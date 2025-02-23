@@ -24,7 +24,7 @@ xdg.mime.defaultApplications = {
  "application/pdf" = "org.qutebrowser.qutebrowser.desktop";
 };
 services.upower.enable = true;
-
+xdg.portal = {enable =true; extraPortals = [pkgs.xdg-desktop-portal-hyprland];};
 programs.xwayland.enable = true;
 services.udev.extraRules = ''
     KERNEL=="uinput", MODE="0660", GROUP="uinput", OPTIONS+="static_node=uinput"
@@ -48,6 +48,7 @@ services.udev.extraRules = ''
   enable = true;
   dockerCompat = true;
 };
+
 hardware.nvidia = {
 	modesetting.enable = true;
 	powerManagement.enable = true;
@@ -183,6 +184,7 @@ services.kanata = {
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    libreoffice
     distrobox
     swww
     uv
@@ -205,6 +207,7 @@ services.kanata = {
     cliphist
     hyprlock
     pamixer
+    zsh-powerlevel10k
     ripgrep
     playerctl
     btop
@@ -250,6 +253,14 @@ fonts.packages = with pkgs; [
     pulse.enable = true;
     # Uncomment the following line if you want to use JACK applications
     # jack.enable = true;
+  };
+    users.defaultUserShell = pkgs.zsh;
+   programs.zsh = {
+    enable = true;
+    interactiveShellInit = ''
+      # Load Powerlevel10k
+      source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
+    '';
   };
 
   # This value determines the NixOS release from which the default

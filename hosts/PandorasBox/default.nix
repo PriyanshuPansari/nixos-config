@@ -1,20 +1,23 @@
+{ config, pkgs, ... }:  # <-- Add function parameters at the top
 {
-  imports =
-    [
-      # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
-      networking.hostName = "PandorasBox"; # Define your hostname.
+  imports = [
+    ./hardware-configuration.nix
+  ];
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
+  networking.hostName = "PandorasBox";
+  #
+  # # Enable Zsh system-wide
+  # environment.systemPackages = [ pkgs.zsh ];  # <-- Add this line
+  # programs.zsh.enable = true;  # <-- Optional but recommended
+
+  # User configuration
   users.users.undead = {
     isNormalUser = true;
     description = "PriyanshuPansari";
     extraGroups = [ "networkmanager" "wheel" ];
-    # packages = with pkgs; [];
+    shell = pkgs.zsh;  # This is correct
   };
 
-
-  # Enable automatic login for the user.
+  # Automatic login
   services.getty.autologinUser = "undead";
 }

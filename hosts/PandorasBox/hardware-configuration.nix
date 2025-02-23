@@ -12,7 +12,7 @@
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
-
+  # boot.kernelParams = [ "nvidia_drm.modset=1" "nvidia_drm.fbdev=1"];
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/f9052209-6acf-4f14-979c-7d0cd2dbedf4";
       fsType = "ext4";
