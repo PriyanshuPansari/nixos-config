@@ -70,7 +70,7 @@ services.udev.extraRules = ''
   enable = true;
   dockerCompat = true;
 };
-
+virtualisation.docker.enable = true;
 hardware.nvidia = {
 	modesetting.enable = true;
 	powerManagement.enable = true;
@@ -207,6 +207,7 @@ services.kanata = {
   environment.systemPackages = with pkgs; [
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     sops
+    nm-tray
     libreoffice
     distrobox
     swww
@@ -306,9 +307,9 @@ system.activationScripts.generateGitHubPubKey = {
     if [ ! -f /home/undead/.ssh/id_ed25519.pub ]; then
       echo "Generating public key from decrypted private key..."
       ${pkgs.openssh}/bin/ssh-keygen -y -f /home/undead/.ssh/id_ed25519 > /home/undead/.ssh/id_ed25519.pub
-      
+
       # Replace the default comment (e.g., root@hostname) with the desired email
-      
+
       # Set correct ownership and permissions (assuming the primary group for "undead" is "users")
       chown undead:users /home/undead/.ssh/id_ed25519.pub
       chmod 644 /home/undead/.ssh/id_ed25519.pub
