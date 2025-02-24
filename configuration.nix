@@ -68,7 +68,7 @@ services.udev.extraRules = ''
   # ];
   virtualisation.podman = {
   enable = true;
-  dockerCompat = true;
+  # dockerCompat = true;
 };
 virtualisation.docker.enable = true;
 hardware.nvidia = {
