@@ -7,8 +7,11 @@
     nix.settings.experimental-features = [ "nix-command" "flakes" ];
 imports = 
 [
+jovian-nixos.nixosModules.default
 inputs.sops-nix.nixosModules.sops
 ];
+
+
 
 # systemd.user.enable = true;
 
@@ -24,6 +27,10 @@ programs.neovim = {
   enable = true; 
   defaultEditor = true;
 };
+jovian.steam.enable = true;
+jovian.steam.autoStart = true;
+jovian.steam.desktopSession = "hyprland";
+
 sops.defaultSopsFile = ./secrets/github_ssh.yaml;
 sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
 sops.age.keyFile = "/var/lib/sops-nix/key.txt";

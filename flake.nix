@@ -2,8 +2,9 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     sops-nix.url = "github:Mic92/sops-nix";
+    jovian-nixos.url = "github:Jovian-Experiments/Jovian-NixOS";
 };
-  outputs = { self, nixpkgs, sops-nix }@inputs: {
+  outputs = { self, nixpkgs, sops-nix, jovian-nixos, ... }@inputs: {
     # replace 'joes-desktop' with your hostname here.
     nixosConfigurations ={
 
