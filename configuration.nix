@@ -7,17 +7,30 @@
     nix.settings.experimental-features = [ "nix-command" "flakes" ];
 imports = 
 [
-jovian-nixos.nixosModules.default
+inputs.jovian-nixos.nixosModules.default
 inputs.sops-nix.nixosModules.sops
 ];
 
 
+  # Jovian Steam configuration
+  jovian = {
+    steam = {
+     desktopSession = "hyprland"; 
+      enable = true;
+    };
+  };
 
 # systemd.user.enable = true;
-
+programs.gamemode = {
+    enable = true;};
 hardware.graphics = {
 	enable =true;
 };
+
+  programs.steam = {
+    enable = true;
+    localNetworkGameTransfers.openFirewall = true;
+  };
 boot.kernelModules = [ "uinput" ];
 hardware.uinput.enable = true;
 services.xserver.videoDrivers = ["nvidia"];
@@ -27,9 +40,6 @@ programs.neovim = {
   enable = true; 
   defaultEditor = true;
 };
-jovian.steam.enable = true;
-jovian.steam.autoStart = true;
-jovian.steam.desktopSession = "hyprland";
 
 sops.defaultSopsFile = ./secrets/github_ssh.yaml;
 sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
