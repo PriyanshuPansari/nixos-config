@@ -17,7 +17,7 @@
     extraGroups = [ "networkmanager" "wheel" "docker" ];
     shell = pkgs.zsh;  # This is correct
   };
-
+programs.zsh.enable = true;
   # Automatic login
   services.getty.autologinUser = "dev";
 }

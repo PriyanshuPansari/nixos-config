@@ -14,7 +14,7 @@
   users.users.undead = {
     isNormalUser = true;
     description = "PriyanshuPansari";
-    extraGroups = [ "networkmanager" "wheel" "docker" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" "gamemode" ];
     shell = pkgs.zsh;  # This is correct
   };
 

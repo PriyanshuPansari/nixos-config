@@ -3,11 +3,12 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     sops-nix.url = "github:Mic92/sops-nix";
     jovian-nixos.url = "github:Jovian-Experiments/Jovian-NixOS";
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    # nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     raspberry-pi-nix.url = "github:tstat/raspberry-pi-nix";
+    nix-gaming.url = "github:fufexan/nix-gaming";
   };
 
-  outputs = { self, nixpkgs, sops-nix, jovian-nixos,nixos-hardware, raspberry-pi-nix,  ... }@inputs: {
+  outputs = { self, nixpkgs, sops-nix, jovian-nixos,nixos-hardware, raspberry-pi-nix, nixos-gaming, ... }@inputs: {
     nixosConfigurations = {
       # Your existing configurations
       PandorasBox = nixpkgs.lib.nixosSystem {
@@ -46,11 +47,14 @@
         specialArgs = { inherit inputs; };
         modules = [
           raspberry-pi-nix.nixosModules.raspberry-pi 
-          ./hosts/RaspberryPi/default.nix  # Create this file for Raspberry Pi specific config
+          raspberry-pi-nix.nixosModules.sd-image
+          # ./hosts/RaspberryPi/default.nix  # Create this file for Raspberry Pi specific config
           ./pi_configuration.nix
         ];
       };
     };
 
+      # packages.aarch64-linux.raspberry-pi-image = self.nixosConfigurations.RaspberryPi.config.system.build.sdImage;
+      # packages.x86_64-linux.raspberry-pi-image = self.nixosConfigurations.RaspberryPi.config.system.build.sdImage;
   };
 }

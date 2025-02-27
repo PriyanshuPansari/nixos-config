@@ -7,6 +7,7 @@
     nix.settings.experimental-features = [ "nix-command" "flakes" ];
 imports = 
 [
+inputs.nix-gaming.nixosModules.steamPlatformOptimizations
 inputs.jovian-nixos.nixosModules.default
 inputs.sops-nix.nixosModules.sops
 ];
@@ -14,6 +15,7 @@ inputs.sops-nix.nixosModules.sops
 
   # Jovian Steam configuration
   jovian = {
+    decky-loader.enable = true;
     steam = {
      desktopSession = "hyprland"; 
       enable = true;
@@ -111,6 +113,12 @@ specialisation = {
       powerManagement.finegrained = lib.mkForce true;
       prime.sync.enable = lib.mkForce false;
     };
+  };
+  gaming.configuration={
+    system.nixos.tags = [ "gaming" ];
+    jovian.steam.autoStart = lib.mkForce true;
+     programs.steam.platformOptimizations.enable = lib.mkForce true;
+     boot.kernelPackages = lib.mkForce pkgs.linuxPackages_xanmod;
   };
 };
 
@@ -219,6 +227,7 @@ services.kanata = {
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
+boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
