@@ -1,7 +1,7 @@
 { config, pkgs, ... }:  # <-- Add function parameters at the top
 {
   imports = [
-    ./hardware-configuration.nix
+    # ./hardware-configuration.nix
   ];
 
   networking.hostName = "RaspberryPi";
