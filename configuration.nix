@@ -109,7 +109,9 @@ specialisation = {
   gaming.configuration={
     system.nixos.tags = [ "gaming" ];
  environment.loginShellInit = ''
+    echo "prob"
     if [[ "$(tty)" = "/dev/tty1" ]]; then
+      echo "no probe"
       exec ${pkgs.gamescope}/bin/gamescope --rt --steam -- ${pkgs.steam}/bin/steam -tenfoot -pipewire-dmabuf
     fi
   '';# NVIDIA-specific environment variables for gaming
