@@ -108,14 +108,11 @@ specialisation = {
   };
   gaming.configuration={
     system.nixos.tags = [ "gaming" ];
-programs.bash.loginShellInit = ''
-  if [[ "$(tty)" == "/dev/tty1" ]]; then
-    echo "Launching Steam Big Picture Mode..."
-    ${pkgs.gamescope}/bin/gamescope --rt --steam -- ${pkgs.steam}/bin/steam -tenfoot
-    # If Steam exits, return to login
-    logout
-  fi
-''; # NVIDIA-specific environment variables for gaming
+ environment.loginShellInit = ''
+    if [[ "$(tty)" = "/dev/tty1" ]]; then
+      exec ${pkgs.gamescope}/bin/gamescope --rt --steam -- ${pkgs.steam}/bin/steam -tenfoot -pipewire-dmabuf
+    fi
+  '';# NVIDIA-specific environment variables for gaming
   environment.sessionVariables = {
     # Core NVIDIA variables
     LIBVA_DRIVER_NAME = "nvidia";
