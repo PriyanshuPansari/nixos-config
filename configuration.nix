@@ -108,32 +108,14 @@ specialisation = {
   };
   gaming.configuration={
     system.nixos.tags = [ "gaming" ];
-# Configure automatic login to tty1
-  # Enable Steam in a SteamOS-like session
-  # services.getty.autologinUser = lib.mkForce null;
-  # Login shell initialization for all users
-
-  services.getty.autologinUser = lib.mkForce null;
-services.xserver = {
-    enable = true;
-    displayManager = {
-      sddm.enable = true;
-      autoLogin = {
-        enable = true;
-        user = "undead";
-      };
-      # Custom Steam session
-      session = [{
-        name = "steam";
-        manage = "desktop";
-        start = ''
-          ${pkgs.gamescope}/bin/gamescope --rt --steam -- ${pkgs.steam}/bin/steam -tenfoot &
-          waitPID=$!
-        '';
-      }];
-      defaultSession = "steam";
-    };
-  };  # NVIDIA-specific environment variables for gaming
+programs.bash.loginShellInit = ''
+  if [[ "$(tty)" == "/dev/tty1" ]]; then
+    echo "Launching Steam Big Picture Mode..."
+    ${pkgs.gamescope}/bin/gamescope --rt --steam -- ${pkgs.steam}/bin/steam -tenfoot
+    # If Steam exits, return to login
+    logout
+  fi
+''; # NVIDIA-specific environment variables for gaming
   environment.sessionVariables = {
     # Core NVIDIA variables
     LIBVA_DRIVER_NAME = "nvidia";
