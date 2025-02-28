@@ -2,13 +2,12 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     sops-nix.url = "github:Mic92/sops-nix";
-    jovian-nixos.url = "github:Jovian-Experiments/Jovian-NixOS";
     # nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     raspberry-pi-nix.url = "github:tstat/raspberry-pi-nix";
     nix-gaming.url = "github:fufexan/nix-gaming";
   };
 
-  outputs = { self, nixpkgs, sops-nix, jovian-nixos,nixos-hardware, raspberry-pi-nix, nixos-gaming, ... }@inputs: {
+  outputs = { self, nixpkgs, sops-nix, nixos-hardware, raspberry-pi-nix, nix-gaming, ... }@inputs: {
     nixosConfigurations = {
       # Your existing configurations
       PandorasBox = nixpkgs.lib.nixosSystem {
@@ -37,7 +36,6 @@
         specialArgs = { inherit inputs; };
         modules = [
           sops-nix.nixosModules.sops
-          jovian-nixos.nixosModules.default
           ./vm-configuration.nix  # Save the VM config to this file
         ];
       };

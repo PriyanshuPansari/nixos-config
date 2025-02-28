@@ -7,21 +7,13 @@
     nix.settings.experimental-features = [ "nix-command" "flakes" ];
 imports = 
 [
-inputs.nix-gaming.nixosModules.steamPlatformOptimizations
-inputs.jovian-nixos.nixosModules.default
+inputs.nix-gaming.nixosModules.platformOptimizations
 inputs.sops-nix.nixosModules.sops
 ];
 
 
-  # Jovian Steam configuration
-  jovian = {
-    decky-loader.enable = true;
-    steam = {
-     desktopSession = "hyprland"; 
-      enable = true;
-    };
-  };
 
+programs.steam.gamescopeSession.enable = true;
 # systemd.user.enable = true;
 programs.gamemode = {
     enable = true;};
@@ -116,7 +108,33 @@ specialisation = {
   };
   gaming.configuration={
     system.nixos.tags = [ "gaming" ];
-    jovian.steam.autoStart = lib.mkForce true;
+  # Simpler approach - direct X session
+  # services.xserver = {
+  #   enable = true;
+  #   displayManager = {
+  #     autoLogin = {
+  #       enable = true;
+  #       user = "undead";
+  #     };
+  #     # Replace your existing display manager with a minimal one that will auto-start Steam
+  #     defaultSession = "steam-bigpicture";
+  #     session = [
+  #       {
+  #         name = "steam-bigpicture";
+  #         manage = "desktop";
+  #         start = ''
+  #           ${pkgs.gamescope}/bin/gamescope --rt --steam -- ${pkgs.steam}/bin/steam -tenfoot -pipewire-dmabuf &
+  #           waitPID=$!
+  #         '';
+  #       }
+  #     ];
+  #   };
+  # };
+ environment.loginShellInit = ''
+    if [[ "$(tty)" = "/dev/tty1" ]] && [ ! -f /tmp/sway-running ]; then
+      exec ${pkgs.gamescope}/bin/gamescope --rt --steam -- ${pkgs.steam}/bin/steam -tenfoot -pipewire-dmabuf
+    fi
+  '';
      programs.steam.platformOptimizations.enable = lib.mkForce true;
      boot.kernelPackages = lib.mkForce pkgs.linuxPackages_xanmod;
   };
