@@ -108,33 +108,52 @@ specialisation = {
   };
   gaming.configuration={
     system.nixos.tags = [ "gaming" ];
-  # Simpler approach - direct X session
-  # services.xserver = {
-  #   enable = true;
-  #   displayManager = {
-  #     autoLogin = {
-  #       enable = true;
-  #       user = "undead";
-  #     };
-  #     # Replace your existing display manager with a minimal one that will auto-start Steam
-  #     defaultSession = "steam-bigpicture";
-  #     session = [
-  #       {
-  #         name = "steam-bigpicture";
-  #         manage = "desktop";
-  #         start = ''
-  #           ${pkgs.gamescope}/bin/gamescope --rt --steam -- ${pkgs.steam}/bin/steam -tenfoot -pipewire-dmabuf &
-  #           waitPID=$!
-  #         '';
-  #       }
-  #     ];
-  #   };
-  # };
- environment.loginShellInit = ''
-    if [[ "$(tty)" = "/dev/tty1" ]] && [ ! -f /tmp/sway-running ]; then
-      exec ${pkgs.gamescope}/bin/gamescope --rt --steam -- ${pkgs.steam}/bin/steam -tenfoot -pipewire-dmabuf
-    fi
-  '';
+# Configure automatic login to tty1
+  # Enable Steam in a SteamOS-like session
+  # services.getty.autologinUser = lib.mkForce null;
+  # Login shell initialization for all users
+
+  services.getty.autologinUser = lib.mkForce null;
+services.xserver = {
+    enable = true;
+    displayManager = {
+      sddm.enable = true;
+      autoLogin = {
+        enable = true;
+        user = "undead";
+      };
+      # Custom Steam session
+      session = [{
+        name = "steam";
+        manage = "desktop";
+        start = ''
+          ${pkgs.gamescope}/bin/gamescope --rt --steam -- ${pkgs.steam}/bin/steam -tenfoot &
+          waitPID=$!
+        '';
+      }];
+      defaultSession = "steam";
+    };
+  };  # NVIDIA-specific environment variables for gaming
+  environment.sessionVariables = {
+    # Core NVIDIA variables
+    LIBVA_DRIVER_NAME = "nvidia";
+    __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+    VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.x86_64.json";
+    
+    # Direct rendering
+    __NV_PRIME_RENDER_OFFLOAD = "1";
+    NVD_BACKEND = "direct";
+    GBM_BACKEND = "nvidia-drm";
+    
+    # Steam/Gamescope specific
+    STEAM_RUNTIME_PREFER_HOST_LIBRARIES = "1";
+    DXVK_ASYNC = "1";  # Better performance for DXVK games
+    PROTON_HIDE_NVIDIA_GPU = "0";
+    
+    # Disable compositing and VRR for maximum performance
+    GAMESCOPE_DISABLE_BUFFERING = "1";
+    GAMESCOPE_FORCE_FULLSCREEN = "1";
+  };
      programs.steam.platformOptimizations.enable = lib.mkForce true;
      boot.kernelPackages = lib.mkForce pkgs.linuxPackages_xanmod;
   };
