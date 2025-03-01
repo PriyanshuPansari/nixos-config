@@ -7,11 +7,12 @@
     nix.settings.experimental-features = [ "nix-command" "flakes" ];
 imports = 
 [
+inputs.jovian-nixos.nixosModules.default
 inputs.nix-gaming.nixosModules.platformOptimizations
 inputs.sops-nix.nixosModules.sops
 ];
 
-
+jovian.steam.enable = true;
 
 programs.steam.gamescopeSession.enable = true;
 # systemd.user.enable = true;
@@ -108,13 +109,12 @@ specialisation = {
   };
   gaming.configuration={
     system.nixos.tags = [ "gaming" ];
- environment.loginShellInit = ''
-    echo "prob"
-    if [[ "$(tty)" = "/dev/tty1" ]]; then
-      echo "no probe"
-      exec ${pkgs.gamescope}/bin/gamescope --rt --steam -- ${pkgs.steam}/bin/steam -tenfoot -pipewire-dmabuf
-    fi
-  '';# NVIDIA-specific environment variables for gaming
+jovian.steam={
+autoStart = true;
+user = "undead";
+};
+
+  # NVIDIA-specific environment variables for gaming
   environment.sessionVariables = {
     # Core NVIDIA variables
     LIBVA_DRIVER_NAME = "nvidia";
