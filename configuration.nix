@@ -2,81 +2,120 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, lib, pkgs, inputs,  ... }:
+{ config, lib, pkgs, inputs,  ... 
+}:
 {
-    nix.settings.experimental-features = [ "nix-command" "flakes" ];
-imports = 
-[
-inputs.nvf.nixosModules.default
-inputs.jovian-nixos.nixosModules.default
-inputs.nix-gaming.nixosModules.platformOptimizations
-inputs.sops-nix.nixosModules.sops
-];
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  imports = 
+    [
+      inputs.nvf.nixosModules.default
+      inputs.jovian-nixos.nixosModules.default
+      inputs.nix-gaming.nixosModules.platformOptimizations
+      inputs.sops-nix.nixosModules.sops
+    ];
 
-jovian.steam.enable = true;
+  jovian.steam.enable = true;
 
-programs.steam.gamescopeSession.enable = true;
-# systemd.user.enable = true;
-programs.gamemode = {
+  programs.steam.gamescopeSession.enable = true;
+  # systemd.user.enable = true;
+  programs.gamemode = {
     enable = true;};
-hardware.graphics = {
-	enable =true;
-};
+  hardware.graphics = {
+    enable =true;
+  };
 
   programs.steam = {
     enable = true;
     localNetworkGameTransfers.openFirewall = true;
   };
-boot.kernelModules = [ "uinput" ];
-hardware.uinput.enable = true;
-services.xserver.videoDrivers = ["nvidia"];
-services.fstrim.enable = true;
-programs.neovim = {
+  boot.kernelModules = [ "uinput" ];
+  hardware.uinput.enable = true;
+  services.xserver.videoDrivers = ["nvidia"];
+  services.fstrim.enable = true;
+  # programs.neovim = {
+  #
+  #   enable = true; 
+  #   defaultEditor = true;
+  # };
 
-  enable = true; 
-  defaultEditor = true;
-};
+  sops.defaultSopsFile = ./secrets/github_ssh.yaml;
+  sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+  sops.age.keyFile = "/var/lib/sops-nix/key.txt";
 
-sops.defaultSopsFile = ./secrets/github_ssh.yaml;
-sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
-sops.age.keyFile = "/var/lib/sops-nix/key.txt";
+  sops.age.generateKey = true;
 
-sops.age.generateKey = true;
-
-programs.nvf = {
+  programs.nvf = {
     enable = true;
+    enableManpages = true;
     # your settings need to go into the settings attribute set
     # most settings are documented in the appendix
     settings = {
-      vim.viAlias = false;
-      vim.vimAlias = true;
-      vim.lsp = {
-        enable = true;
+      vim ={
+        useSystemClipboard = true;
+        viAlias = false;
+        vimAlias = true;
+        theme = {
+          enable = true;
+          name = "tokyonight";
+          style = "night";
+        };
+        statusline.lualine.enable = true;
+        telescope.enable = true;
+        autocomplete.nvim-cmp.enable = true;
+        utility.yazi-nvim.enable = true;
+        extraLuaFiles = [  (builtins.path {
+          path = ./programs/editor/nvim/init.lua;
+          name = "init-lua";
+        }) ];
+        keymaps =[
+          {
+            key = "<leader>f";
+            mode = "n";
+            silent = true;
+            action = ":vim.lsp.buf.format";
+          }
+        ];
+        languages = {
+          enableLSP = true;
+          enableTreesitter = true;
+          nix.enable = true;
+          nix.treesitter.enable = true;
+          ts.enable = true;
+          python.enable = true;
+          lua.enable = true;
+        };
+        options = {
+          tabstop=2;
+          shiftwidth=2;
+        };
       };
     };
   };
-}
 
- # sops.secrets.github_ssh_key = {
- #    key = "github_ssh_key";
- #    path = "/root/.ssh/github_id_ed25519";
- #    owner = "root";
- #    group = "root";
- #    mode = "0600";
- #  };
-   sops.secrets.github_ssh_key = {
+
+
+
+
+  # sops.secrets.github_ssh_key = {
+  #    key = "github_ssh_key";
+  #    path = "/root/.ssh/github_id_ed25519";
+  #    owner = "root";
+  #    group = "root";
+  #    mode = "0600";
+  #  };
+  sops.secrets.github_ssh_key = {
     path = "/home/undead/.ssh/id_ed25519";
     owner = "undead";
   };
- hardware.nvidia-container-toolkit.enable = true;
-xdg.mime.defaultApplications = {
+  hardware.nvidia-container-toolkit.enable = true;
+  xdg.mime.defaultApplications = {
 
- "application/pdf" = "org.qutebrowser.qutebrowser.desktop";
-};
-services.upower.enable = true;
-xdg.portal = {enable =true; extraPortals = [pkgs.xdg-desktop-portal-hyprland];};
-programs.xwayland.enable = true;
-services.udev.extraRules = ''
+    "application/pdf" = "org.qutebrowser.qutebrowser.desktop";
+  };
+  services.upower.enable = true;
+  xdg.portal = {enable =true; extraPortals = [pkgs.xdg-desktop-portal-hyprland];};
+  programs.xwayland.enable = true;
+  services.udev.extraRules = ''
     KERNEL=="uinput", MODE="0660", GROUP="uinput", OPTIONS+="static_node=uinput"
   '';
   users.groups.uinput = { };
@@ -87,86 +126,86 @@ services.udev.extraRules = ''
       "uinput"
     ];
   };
-# programs.nix-ld.enable = true;
-#   programs.nix-ld.libraries = with pkgs; [
-    # Add any missing dynamic libraries for unpackaged programs
-    # here, NOT in environment.systemPackages
+  # programs.nix-ld.enable = true;
+  #   programs.nix-ld.libraries = with pkgs; [
+  # Add any missing dynamic libraries for unpackaged programs
+  # here, NOT in environment.systemPackages
   # libxkbcommon
   # xorg.libxcb
   # ];
   virtualisation.podman = {
-  enable = true;
-  # dockerCompat = true;
-};
-virtualisation.docker.enable = true;
-hardware.nvidia = {
-	modesetting.enable = true;
-	powerManagement.enable = true;
-	powerManagement.finegrained = false;
-	open = true;
-	nvidiaSettings = true;
-	dynamicBoost.enable = false;
-	package = config.boot.kernelPackages.nvidiaPackages.beta;
-};
+    enable = true;
+    # dockerCompat = true;
+  };
+  virtualisation.docker.enable = true;
+  hardware.nvidia = {
+    modesetting.enable = true;
+    powerManagement.enable = true;
+    powerManagement.finegrained = false;
+    open = true;
+    nvidiaSettings = true;
+    dynamicBoost.enable = false;
+    package = config.boot.kernelPackages.nvidiaPackages.beta;
+  };
   hardware.nvidia.prime = {
     sync.enable = true;
     intelBusId = "PCI:0:2:0";
     nvidiaBusId = "PCI:1:0:0";
   };
-specialisation = {
-  on-the-go.configuration = {
-    system.nixos.tags = [ "on-the-go" ];
-    hardware.nvidia = {
-      prime.offload.enable = lib.mkForce true;
-      prime.offload.enableOffloadCmd = lib.mkForce true;
-      powerManagement.finegrained = lib.mkForce true;
-      prime.sync.enable = lib.mkForce false;
+  specialisation = {
+    on-the-go.configuration = {
+      system.nixos.tags = [ "on-the-go" ];
+      hardware.nvidia = {
+        prime.offload.enable = lib.mkForce true;
+        prime.offload.enableOffloadCmd = lib.mkForce true;
+        powerManagement.finegrained = lib.mkForce true;
+        prime.sync.enable = lib.mkForce false;
+      };
+    };
+    gaming.configuration={
+      system.nixos.tags = [ "gaming" ];
+      jovian.steam={
+        autoStart = true;
+        user = "undead";
+      };
+
+      # NVIDIA-specific environment variables for gaming
+      environment.sessionVariables = {
+        # Core NVIDIA variables
+        LIBVA_DRIVER_NAME = "nvidia";
+        __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+        VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.x86_64.json";
+
+        # Direct rendering
+        __NV_PRIME_RENDER_OFFLOAD = "1";
+        NVD_BACKEND = "direct";
+        GBM_BACKEND = "nvidia-drm";
+
+        # Steam/Gamescope specific
+        STEAM_RUNTIME_PREFER_HOST_LIBRARIES = "1";
+        DXVK_ASYNC = "1";  # Better performance for DXVK games
+        PROTON_HIDE_NVIDIA_GPU = "0";
+
+        # Disable compositing and VRR for maximum performance
+        GAMESCOPE_DISABLE_BUFFERING = "1";
+        GAMESCOPE_FORCE_FULLSCREEN = "1";
+      };
+      programs.steam.platformOptimizations.enable = lib.mkForce true;
+      boot.kernelPackages = lib.mkForce pkgs.linuxPackages_xanmod;
     };
   };
-  gaming.configuration={
-    system.nixos.tags = [ "gaming" ];
-jovian.steam={
-autoStart = true;
-user = "undead";
-};
 
-  # NVIDIA-specific environment variables for gaming
-  environment.sessionVariables = {
-    # Core NVIDIA variables
-    LIBVA_DRIVER_NAME = "nvidia";
-    __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-    VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.x86_64.json";
-    
-    # Direct rendering
-    __NV_PRIME_RENDER_OFFLOAD = "1";
-    NVD_BACKEND = "direct";
-    GBM_BACKEND = "nvidia-drm";
-    
-    # Steam/Gamescope specific
-    STEAM_RUNTIME_PREFER_HOST_LIBRARIES = "1";
-    DXVK_ASYNC = "1";  # Better performance for DXVK games
-    PROTON_HIDE_NVIDIA_GPU = "0";
-    
-    # Disable compositing and VRR for maximum performance
-    GAMESCOPE_DISABLE_BUFFERING = "1";
-    GAMESCOPE_FORCE_FULLSCREEN = "1";
-  };
-     programs.steam.platformOptimizations.enable = lib.mkForce true;
-     boot.kernelPackages = lib.mkForce pkgs.linuxPackages_xanmod;
-  };
-};
-
-services.kanata = {
-  enable = true;
-  keyboards = {
-    internalKeyboard = {
-      devices = [
-        "/dev/input/by-id/usb-SEMICO_Redgear_Shadow_Blade_Mechanical_Keyboard-event-kbd"
-        "/dev/input/by-id/usb-ITE_Tech._Inc._ITE_Device_8176_-event-kbd"
-        "/dev/usb/by-id/usb-SINO_WEALTH_Bluetooth_Keyboard-event-kbd"
-      ];
-      extraDefCfg = "process-unmapped-keys yes";
-      config = ''
+  services.kanata = {
+    enable = true;
+    keyboards = {
+      internalKeyboard = {
+        devices = [
+          "/dev/input/by-id/usb-SEMICO_Redgear_Shadow_Blade_Mechanical_Keyboard-event-kbd"
+          "/dev/input/by-id/usb-ITE_Tech._Inc._ITE_Device_8176_-event-kbd"
+          "/dev/usb/by-id/usb-SINO_WEALTH_Bluetooth_Keyboard-event-kbd"
+        ];
+        extraDefCfg = "process-unmapped-keys yes";
+        config = ''
         ;; Define source keys to intercept (left and right hand keys)
         (defsrc
           q w e r t y u i o p
@@ -176,7 +215,7 @@ services.kanata = {
 
         ;; Variables for timing and key groups
         (defvar
-          tap-time 200
+          tap-time 150
           hold-time 130
           left-hand-keys (
             q w e r t
@@ -251,14 +290,14 @@ services.kanata = {
           u (tap-hold $tap-time $hold-time u (layer-while-held symbols))
           t (tap-hold $tap-time $hold-time t (layer-while-held navigation))
         )
-      '';
+        '';
+      };
     };
   };
-};
 
 
-# Bootloader.
-boot.loader.systemd-boot.enable = true;
+  # Bootloader.
+  boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -291,11 +330,12 @@ boot.loader.systemd-boot.enable = true;
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    inputs.ags.packages.${pkgs.system}.defaul
     sops
     nm-tray
     libreoffice
@@ -334,11 +374,11 @@ boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
     wl-clipboard
     zsh
   ];
-fonts.packages = with pkgs; [
-	nerd-fonts.droid-sans-mono
-	noto-fonts
-];
- programs.hyprland.enable = true;
+  fonts.packages = with pkgs; [
+    nerd-fonts.droid-sans-mono
+    noto-fonts
+  ];
+  programs.hyprland.enable = true;
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
@@ -369,8 +409,8 @@ fonts.packages = with pkgs; [
     # Uncomment the following line if you want to use JACK applications
     # jack.enable = true;
   };
-    users.defaultUserShell = pkgs.zsh;
-   programs.zsh = {
+  users.defaultUserShell = pkgs.zsh;
+  programs.zsh = {
     enable = true;
     interactiveShellInit = ''
       # Load Powerlevel10k
@@ -387,8 +427,8 @@ fonts.packages = with pkgs; [
       RemainAfterExit = true;
     };
   };
-system.activationScripts.generateGitHubPubKey = {
-  text = ''
+  system.activationScripts.generateGitHubPubKey = {
+    text = ''
     #!/bin/sh
     # Ensure the .ssh directory exists for the user “undead”
     mkdir -p /home/undead/.ssh
@@ -406,8 +446,8 @@ system.activationScripts.generateGitHubPubKey = {
       ${pkgs.gnused}/bin/sed -i 's/ [^ ]*$/ priyanshu.pansari@gmail.com/' /home/undead/.ssh/id_ed25519.pub
 
     fi
-  '';
-};
+    '';
+  };
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave

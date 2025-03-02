@@ -6,55 +6,77 @@
     raspberry-pi-nix.url = "github:tstat/raspberry-pi-nix";
     nix-gaming.url = "github:fufexan/nix-gaming";
     jovian-nixos.url = "github:Jovian-Experiments/jovian-NixOS";
-    nvf.url = "github:notaself/nvf";
-  };
-
-  outputs = { self, nixpkgs, sops-nix, nixos-hardware, raspberry-pi-nix, nix-gaming, jovian-nixos , nvf, ... }@inputs: {
-    nixosConfigurations = {
-      # Your existing configurations
-      PandorasBox = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        specialArgs = { inherit inputs; };
-        modules = [
-          sops-nix.nixosModules.sops
-          ./hosts/PandorasBox/default.nix
-          ./configuration.nix
-        ];
-      };
-      
-      Hope = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        specialArgs = { inherit inputs; };
-        modules = [
-          sops-nix.nixosModules.sops
-          ./hosts/Hope/default.nix
-          ./configuration.nix
-        ];
-      };
-      
-      # VM configuration
-      VM = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        specialArgs = { inherit inputs; };
-        modules = [
-          sops-nix.nixosModules.sops
-          ./vm-configuration.nix  # Save the VM config to this file
-        ];
-      };
-       # New Raspberry Pi configuration
-      RaspberryPi = nixpkgs.lib.nixosSystem {
-        system = "aarch64-linux";  # Raspberry Pi 4 uses aarch64 architecture
-        specialArgs = { inherit inputs; };
-        modules = [
-          raspberry-pi-nix.nixosModules.raspberry-pi 
-          raspberry-pi-nix.nixosModules.sd-image
-          # ./hosts/RaspberryPi/default.nix  # Create this file for Raspberry Pi specific config
-          ./pi_configuration.nix
-        ];
+    nvf.url = "github:notashelf/nvf";
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    ags = {
+      # last commit I had before ags switched to astal (thus breaking my config)
+      # TODO: set up quickshell ASAP
+      url = "github:Aylur/ags/60180a184cfb32b61a1d871c058b31a3b9b0743d";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        systems.follows = "systems";
       };
     };
+  };
+
+  outputs = { self, nixpkgs, sops-nix, nixos-hardware, raspberry-pi-nix, nix-gaming, jovian-nixos , nvf, home-manager, ags,  ... }@inputs:
+    let 
+      system = "x86_64-linux";
+    in
+      {
+      homeConfigurations."undead" = home-manager.lib.homeManagerConfiguration {
+        pkgs = import nixpkgs { inherit system; };
+        extraSpecialArgs = { inherit inputs; };
+        modules = [ ./home.nix ];
+      };
+      nixosConfigurations = {
+        # Your existing configurations
+        PandorasBox = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          specialArgs = { inherit inputs; };
+          modules = [
+            sops-nix.nixosModules.sops
+            ./hosts/PandorasBox/default.nix
+            ./configuration.nix
+          ];
+        };
+
+        Hope = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          specialArgs = { inherit inputs; };
+          modules = [
+            sops-nix.nixosModules.sops
+            ./hosts/Hope/default.nix
+            ./configuration.nix
+          ];
+        };
+
+        # VM configuration
+        VM = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          specialArgs = { inherit inputs; };
+          modules = [
+            sops-nix.nixosModules.sops
+            ./vm-configuration.nix  # Save the VM config to this file
+          ];
+        };
+        # New Raspberry Pi configuration
+        RaspberryPi = nixpkgs.lib.nixosSystem {
+          system = "aarch64-linux";  # Raspberry Pi 4 uses aarch64 architecture
+          specialArgs = { inherit inputs; };
+          modules = [
+            raspberry-pi-nix.nixosModules.raspberry-pi 
+            raspberry-pi-nix.nixosModules.sd-image
+            # ./hosts/RaspberryPi/default.nix  # Create this file for Raspberry Pi specific config
+            ./pi_configuration.nix
+          ];
+        };
+      };
 
       # packages.aarch64-linux.raspberry-pi-image = self.nixosConfigurations.RaspberryPi.config.system.build.sdImage;
       # packages.x86_64-linux.raspberry-pi-image = self.nixosConfigurations.RaspberryPi.config.system.build.sdImage;
-  };
+    };
 }
