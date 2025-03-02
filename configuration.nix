@@ -8,6 +8,7 @@
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   imports = 
     [
+      inputs.home-manager.nixosModules.home-manager
       inputs.nvf.nixosModules.default
       inputs.jovian-nixos.nixosModules.default
       inputs.nix-gaming.nixosModules.platformOptimizations
@@ -308,7 +309,7 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
-
+programs.direnv.enable = true;
   # Set your time zone.
   time.timeZone = "Asia/Kolkata";
 
@@ -335,7 +336,6 @@
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-    inputs.ags.packages.${pkgs.system}.defaul
     sops
     nm-tray
     libreoffice

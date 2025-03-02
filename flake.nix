@@ -17,21 +17,12 @@
       url = "github:Aylur/ags/60180a184cfb32b61a1d871c058b31a3b9b0743d";
       inputs = {
         nixpkgs.follows = "nixpkgs";
-        systems.follows = "systems";
       };
     };
   };
 
   outputs = { self, nixpkgs, sops-nix, nixos-hardware, raspberry-pi-nix, nix-gaming, jovian-nixos , nvf, home-manager, ags,  ... }@inputs:
-    let 
-      system = "x86_64-linux";
-    in
       {
-      homeConfigurations."undead" = home-manager.lib.homeManagerConfiguration {
-        pkgs = import nixpkgs { inherit system; };
-        extraSpecialArgs = { inherit inputs; };
-        modules = [ ./home.nix ];
-      };
       nixosConfigurations = {
         # Your existing configurations
         PandorasBox = nixpkgs.lib.nixosSystem {
@@ -41,6 +32,7 @@
             sops-nix.nixosModules.sops
             ./hosts/PandorasBox/default.nix
             ./configuration.nix
+            ./home.nix
           ];
         };
 
