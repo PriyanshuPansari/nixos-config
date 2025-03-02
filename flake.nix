@@ -6,9 +6,10 @@
     raspberry-pi-nix.url = "github:tstat/raspberry-pi-nix";
     nix-gaming.url = "github:fufexan/nix-gaming";
     jovian-nixos.url = "github:Jovian-Experiments/jovian-NixOS";
+    nvf.url = "github:notaself/nvf";
   };
 
-  outputs = { self, nixpkgs, sops-nix, nixos-hardware, raspberry-pi-nix, nix-gaming, jovian-nixos , ... }@inputs: {
+  outputs = { self, nixpkgs, sops-nix, nixos-hardware, raspberry-pi-nix, nix-gaming, jovian-nixos , nvf, ... }@inputs: {
     nixosConfigurations = {
       # Your existing configurations
       PandorasBox = nixpkgs.lib.nixosSystem {
