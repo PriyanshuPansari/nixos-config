@@ -17,6 +17,7 @@
 
   jovian.steam.enable = true;
 
+  home-manager.backupFileExtension = "backup";
   programs.steam.gamescopeSession.enable = true;
   # systemd.user.enable = true;
   programs.gamemode = {
