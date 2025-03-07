@@ -15,7 +15,6 @@
       inputs.sops-nix.nixosModules.sops
     ];
 
-  jovian.steam.enable = true;
 
   home-manager.backupFileExtension = "backup";
   programs.steam.gamescopeSession.enable = true;
@@ -98,6 +97,14 @@
 
 
 
+  programs.git = {
+    enable = true;
+  };
+    environment.etc."gitconfig".text = ''
+    [alias]
+      acp = "!f() { git add . && git commit -m \"$*\" && git push; }; f"
+  '';
+
   # sops.secrets.github_ssh_key = {
   #    key = "github_ssh_key";
   #    path = "/root/.ssh/github_id_ed25519";
@@ -167,6 +174,8 @@
     gaming.configuration={
       system.nixos.tags = [ "gaming" ];
       jovian.steam={
+        enable = true;
+
         autoStart = true;
         user = "undead";
       };
@@ -218,7 +227,7 @@
         ;; Variables for timing and key groups
         (defvar
           tap-time 150
-          hold-time 130
+          hold-time 120
           left-hand-keys (
             q w e r t
             a s d f g
@@ -339,6 +348,9 @@ programs.direnv.enable = true;
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     sops
     nm-tray
+    tldr 
+    google-chrome
+    # inputs.claude-desktop.packages.${system}.claude-desktop
     libreoffice
     distrobox
     swww

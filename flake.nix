@@ -11,6 +11,14 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    flake-utils.url = "github:numtide/flake-utils";
+    claude-desktop={
+      url = "github:k3d3/claude-desktop-linux-flake";
+      inputs = {
+        nixpkgs.follows= "nixpkgs";
+        flake-utils.follows = "flake-utils";
+      };
+    };
     ags = {
       # last commit I had before ags switched to astal (thus breaking my config)
       # TODO: set up quickshell ASAP
@@ -21,7 +29,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, sops-nix, nixos-hardware, raspberry-pi-nix, nix-gaming, jovian-nixos , nvf, home-manager, ags,  ... }@inputs:
+  outputs = { self, nixpkgs, sops-nix, nixos-hardware, raspberry-pi-nix, nix-gaming, jovian-nixos , nvf, home-manager,flake-utils, claude-desktop, ags,  ... }@inputs:
       {
       nixosConfigurations = {
         # Your existing configurations
