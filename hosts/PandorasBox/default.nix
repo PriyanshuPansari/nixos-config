@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:  # <-- Add function parameters at the top
+{ pkgs, ... }: # <-- Add function parameters at the top
 {
   imports = [
     ./hardware-configuration.nix
@@ -15,7 +15,7 @@
     isNormalUser = true;
     description = "PriyanshuPansari";
     extraGroups = [ "networkmanager" "wheel" "docker" "gamemode" ];
-    shell = pkgs.zsh;  # This is correct
+    shell = pkgs.zsh; # This is correct
   };
 
   # Automatic login

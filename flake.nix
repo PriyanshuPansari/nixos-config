@@ -12,10 +12,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     flake-utils.url = "github:numtide/flake-utils";
-    claude-desktop={
+    claude-desktop = {
       url = "github:k3d3/claude-desktop-linux-flake";
       inputs = {
-        nixpkgs.follows= "nixpkgs";
+        nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
       };
     };
@@ -27,10 +27,22 @@
         nixpkgs.follows = "nixpkgs";
       };
     };
+    pre-commit-hooks = {
+      url = "github:cachix/pre-commit-hooks.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, sops-nix, nixos-hardware, raspberry-pi-nix, nix-gaming, jovian-nixos , nvf, home-manager,flake-utils, claude-desktop, ags,  ... }@inputs:
-      {
+  outputs = { nixpkgs, sops-nix, raspberry-pi-nix, pre-commit-hooks, ... }@inputs:
+    let
+      system = "x86_64-linux"; # Adjust for your system
+      pkgs = nixpkgs.legacyPackages.${system};
+      pre-commit-check = import ./.pre-commit.nix {
+        inherit pre-commit-hooks system;
+      };
+
+    in
+    {
       nixosConfigurations = {
         # Your existing configurations
         PandorasBox = nixpkgs.lib.nixosSystem {
@@ -44,38 +56,49 @@
           ];
         };
 
-        Hope = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          specialArgs = { inherit inputs; };
-          modules = [
-            sops-nix.nixosModules.sops
-            ./hosts/Hope/default.nix
-            ./configuration.nix
-          ];
-        };
+        # Hope = nixpkgs.lib.nixosSystem {
+        #   system = "x86_64-linux";
+        #   specialArgs = { inherit inputs; };
+        #   modules = [
+        #     sops-nix.nixosModules.sops
+        #     ./hosts/Hope/default.nix
+        #     ./configuration.nix
+        #   ];
+        # };
 
         # VM configuration
-        VM = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          specialArgs = { inherit inputs; };
-          modules = [
-            sops-nix.nixosModules.sops
-            ./vm-configuration.nix  # Save the VM config to this file
-          ];
-        };
+        # VM = nixpkgs.lib.nixosSystem {
+        #   system = "x86_64-linux";
+        #   specialArgs = { inherit inputs; };
+        #   modules = [
+        #     sops-nix.nixosModules.sops
+        #     ./vm-configuration.nix # Save the VM config to this file
+        #   ];
+        # };
         # New Raspberry Pi configuration
         RaspberryPi = nixpkgs.lib.nixosSystem {
-          system = "aarch64-linux";  # Raspberry Pi 4 uses aarch64 architecture
+          system = "aarch64-linux"; # Raspberry Pi 4 uses aarch64 architecture
           specialArgs = { inherit inputs; };
           modules = [
-            raspberry-pi-nix.nixosModules.raspberry-pi 
+            raspberry-pi-nix.nixosModules.raspberry-pi
             raspberry-pi-nix.nixosModules.sd-image
             # ./hosts/RaspberryPi/default.nix  # Create this file for Raspberry Pi specific config
             ./pi_configuration.nix
           ];
         };
       };
+      devShells.${system}.default = pkgs.mkShell {
+        buildInputs = with pkgs; [
+          pre-commit
+          nixpkgs-fmt
+          statix
+          deadnix
+        ];
+        inherit (pre-commit-check) shellHook;
+      };
 
+      # You can also make your repository Nix CI friendly with this:
+      checks.${system}.pre-commit-check = pre-commit-check;
       # packages.aarch64-linux.raspberry-pi-image = self.nixosConfigurations.RaspberryPi.config.system.build.sdImage;
       # packages.x86_64-linux.raspberry-pi-image = self.nixosConfigurations.RaspberryPi.config.system.build.sdImage;
     };

@@ -1,4 +1,4 @@
-{ inputs, pkgs,config, ... }: {
+{ inputs, ... }: {
   users.users.undead.isNormalUser = true;
   home-manager.backupFileExtension = "backup";
   home-manager.users.undead = { pkgs, ... }: {
@@ -10,7 +10,10 @@
       configDir = ./services/ags; # Path relative to home.nix
       # Optional: Add runtime dependencies
       # extraPackages = with pkgs; [ inputs.ags.packages.${pkgs.system}.battery fzf ];
-      extraPackages = with pkgs;  [ atool httpie     gnome-control-center
+      extraPackages = with pkgs;  [
+        atool
+        httpie
+        gnome-control-center
         resources
         hyprland
         overskride
@@ -25,7 +28,8 @@
         inotify-tools
         procps
         ripgrep
-        util-linux];
+        util-linux
+      ];
     };
     # The state version is required and should stay at the version you
     # originally installed.

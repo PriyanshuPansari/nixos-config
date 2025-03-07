@@ -4,7 +4,7 @@
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
     ];
-      networking.hostName = "Hope"; # Define your hostname.
+  networking.hostName = "Hope"; # Define your hostname.
 
   users.users.pandora = {
     isNormalUser = true;
@@ -12,6 +12,6 @@
     extraGroups = [ "networkmanager" "wheel" ];
     # packages = with pkgs; [];
   };
-    services.getty.autologinUser = "pandora";
+  services.getty.autologinUser = "pandora";
 
 }

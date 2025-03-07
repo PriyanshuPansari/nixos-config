@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:  # <-- Add function parameters at the top
+{ pkgs, ... }: # <-- Add function parameters at the top
 {
   imports = [
     # ./hardware-configuration.nix
@@ -15,9 +15,9 @@
     isNormalUser = true;
     description = "dev";
     extraGroups = [ "networkmanager" "wheel" "docker" ];
-    shell = pkgs.zsh;  # This is correct
+    shell = pkgs.zsh; # This is correct
   };
-programs.zsh.enable = true;
+  programs.zsh.enable = true;
   # Automatic login
   services.getty.autologinUser = "dev";
 }
