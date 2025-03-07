@@ -304,8 +304,8 @@
 
             ;; Variables for timing and key groups
             (defvar
-              tap-time 150
-              hold-time 120
+              tap-time 100
+              hold-time 110
               left-hand-keys (
                 q w e r t
                 a s d f g
