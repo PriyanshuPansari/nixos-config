@@ -26,8 +26,28 @@
       enable = true;
     };
     uinput.enable = true;
-    nvidia-container-toolkit.enable = true;
+    bluetooth = {
+      powerOnBoot = true; # powers up the default Bluetooth controller on boot
+      enable = true; # enables support for Bluetooth
+    };
+    nvidia = {
+      modesetting.enable = true;
+      powerManagement.enable = true;
+      powerManagement.finegrained = false;
+      open = true;
+      nvidiaSettings = true;
+      dynamicBoost.enable = false;
+      package = config.boot.kernelPackages.nvidiaPackages.beta;
+      prime = {
+        sync.enable = true;
+        intelBusId = "PCI:0:2:0";
+        nvidiaBusId = "PCI:1:0:0";
+      };
 
+
+      nvidia-container-toolkit.enable = true;
+
+    };
   };
 
   programs = {
@@ -76,362 +96,316 @@
           };
           statusline.lualine.enable = true;
           telescope.enable = true;
-          navigation.harpoon.enable = true;
-          autocomplete.nvim-cmp.enable = true;
-          utility.yazi-nvim.enable = true;
-          extraLuaFiles = [
-            (builtins.path {
-              path = ./programs/editor/nvim/init.lua;
-              name = "init-lua";
-            })
-          ];
-          # General keymaps
-          keymaps = [
-            # Save and quit
-            {
-              key = "<leader>wq";
-              mode = "n";
-              action = ":wq<CR>";
-            }
-            # Quit without saving
-            {
-              key = "<leader>qq";
-              mode = "n";
-              action = ":q!<CR>";
-            }
-            # Save
-            {
-              key = "<leader>ww";
-              mode = "n";
-              action = ":w<CR>";
-            }
-            # Open URL under cursor
-            {
-              key = "gx";
-              mode = "n";
-              action = ":!open <c-r><c-a><CR>";
-            }
-            # Quit all
-            {
-              key = "<leader>qa";
-              mode = "n";
-              action = ":qa<CR>";
-            }
-            # Save all
-            {
-              key = "<leader>wa";
-              mode = "n";
-              action = ":wa<CR>";
-            }
+          navigation.harpoon = {
+            enable = true;
+            # Custom mappings for Harpoon
+            mappings = {
+              markFile = "<leader>ha"; # Mark current file (was "<leader>a" by default)
+              listMarks = "<leader>hh"; # List marked files (was "<C-e>" by default)
+              file1 = "<leader>h1"; # Go to file 1 (was "<C-j>" by default)
+              file2 = "<leader>h2"; # Go to file 2 (was "<C-k>" by default)
+              file3 = "<leader>h3"; # Go to file 3 (was "<C-l>" by default)
+              file4 = "<leader>h4"; # Go to file 4 (was "<C-;>" by default)
+            };
 
-            # Navigate vim panes
-            {
-              key = "<c-k>";
-              mode = "n";
-              action = ":wincmd k<CR>";
-            }
-            {
-              key = "<c-j>";
-              mode = "n";
-              action = ":wincmd j<CR>";
-            }
-            {
-              key = "<c-h>";
-              mode = "n";
-              action = ":wincmd h<CR>";
-            }
-            {
-              key = "<c-l>";
-              mode = "n";
-              action = ":wincmd l<CR>";
-            }
+            autocomplete.nvim-cmp.enable = true;
+            utility.yazi-nvim.enable = true;
+            extraLuaFiles = [
+              (builtins.path {
+                path = ./programs/editor/nvim/init.lua;
+                name = "init-lua";
+              })
+            ];
+            # General keymaps
+            keymaps = [
+              # Save and quit
+              {
+                key = "<leader>wq";
+                mode = "n";
+                action = ":wq<CR>";
+              }
+              # Quit without saving
+              {
+                key = "<leader>qq";
+                mode = "n";
+                action = ":q!<CR>";
+              }
+              # Save
+              {
+                key = "<leader>ww";
+                mode = "n";
+                action = ":w<CR>";
+              }
+              # Open URL under cursor
+              {
+                key = "gx";
+                mode = "n";
+                action = ":!open <c-r><c-a><CR>";
+              }
+              # Quit all
+              {
+                key = "<leader>qa";
+                mode = "n";
+                action = ":qa<CR>";
+              }
+              # Save all
+              {
+                key = "<leader>wa";
+                mode = "n";
+                action = ":wa<CR>";
+              }
 
-            # Split window management
-            {
-              key = "<leader>sv";
-              mode = "n";
-              action = "<C-w>v";
-            }
-            {
-              key = "<leader>sg";
-              mode = "n";
-              action = "<C-w>s";
-            }
-            {
-              key = "<leader>se";
-              mode = "n";
-              action = "<C-w>=";
-            }
-            {
-              key = "<leader>sx";
-              mode = "n";
-              action = ":close<CR>";
-            }
-            {
-              key = "<leader>sj";
-              mode = "n";
-              action = "<C-w>-";
-            }
-            {
-              key = "<leader>sk";
-              mode = "n";
-              action = "<C-w>+";
-            }
-            {
-              key = "<leader>sl";
-              mode = "n";
-              action = "<C-w>>5";
-            }
-            {
-              key = "<leader>sh";
-              mode = "n";
-              action = "<C-w><5";
-            }
+              # Navigate vim panes
+              {
+                key = "<c-k>";
+                mode = "n";
+                action = ":wincmd k<CR>";
+              }
+              {
+                key = "<c-j>";
+                mode = "n";
+                action = ":wincmd j<CR>";
+              }
+              {
+                key = "<c-h>";
+                mode = "n";
+                action = ":wincmd h<CR>";
+              }
+              {
+                key = "<c-l>";
+                mode = "n";
+                action = ":wincmd l<CR>";
+              }
 
-            # Tab management
-            {
-              key = "<leader>to";
-              mode = "n";
-              action = ":tabnew<CR>";
-            }
-            {
-              key = "<leader>tx";
-              mode = "n";
-              action = ":tabclose<CR>";
-            }
-            {
-              key = "<leader>tn";
-              mode = "n";
-              action = ":tabn<CR>";
-            }
-            {
-              key = "<leader>tp";
-              mode = "n";
-              action = ":tabp<CR>";
-            }
-            {
-              key = "<leader>1";
-              mode = "n";
-              action = ":tabn 1<CR>";
-            }
-            {
-              key = "<leader>2";
-              mode = "n";
-              action = ":tabn 2<CR>";
-            }
-            {
-              key = "<leader>3";
-              mode = "n";
-              action = ":tabn 3<CR>";
-            }
-            {
-              key = "<leader>4";
-              mode = "n";
-              action = ":tabn 4<CR>";
-            }
-            {
-              key = "<leader>5";
-              mode = "n";
-              action = ":tabn 5<CR>";
-            }
-            {
-              key = "<leader>6";
-              mode = "n";
-              action = ":tabn 6<CR>";
-            }
-            {
-              key = "<leader>7";
-              mode = "n";
-              action = ":tabn 7<CR>";
-            }
-            {
-              key = "<leader>8";
-              mode = "n";
-              action = ":tabn 8<CR>";
-            }
-            {
-              key = "<leader>9";
-              mode = "n";
-              action = ":tabn 9<CR>";
-            }
+              # Split window management
+              {
+                key = "<leader>sv";
+                mode = "n";
+                action = "<C-w>v";
+              }
+              {
+                key = "<leader>sg";
+                mode = "n";
+                action = "<C-w>s";
+              }
+              {
+                key = "<leader>se";
+                mode = "n";
+                action = "<C-w>=";
+              }
+              {
+                key = "<leader>sx";
+                mode = "n";
+                action = ":close<CR>";
+              }
+              {
+                key = "<leader>sj";
+                mode = "n";
+                action = "<C-w>-";
+              }
+              {
+                key = "<leader>sk";
+                mode = "n";
+                action = "<C-w>+";
+              }
+              {
+                key = "<leader>sl";
+                mode = "n";
+                action = "<C-w>>5";
+              }
+              {
+                key = "<leader>sh";
+                mode = "n";
+                action = "<C-w><5";
+              }
 
-            # Diff keymaps
-            {
-              key = "<leader>cc";
-              mode = "n";
-              action = ":diffput<CR>";
-            }
-            {
-              key = "<leader>cj";
-              mode = "n";
-              action = ":diffget 1<CR>";
-            }
-            {
-              key = "<leader>ck";
-              mode = "n";
-              action = ":diffget 3<CR>";
-            }
-            {
-              key = "<leader>cn";
-              mode = "n";
-              action = "]c";
-            }
-            {
-              key = "<leader>cp";
-              mode = "n";
-              action = "[c";
-            }
+              # Tab management
+              {
+                key = "<leader>to";
+                mode = "n";
+                action = ":tabnew<CR>";
+              }
+              {
+                key = "<leader>tx";
+                mode = "n";
+                action = ":tabclose<CR>";
+              }
+              {
+                key = "<leader>tn";
+                mode = "n";
+                action = ":tabn<CR>";
+              }
+              {
+                key = "<leader>tp";
+                mode = "n";
+                action = ":tabp<CR>";
+              }
+              {
+                key = "<leader>1";
+                mode = "n";
+                action = ":tabn 1<CR>";
+              }
+              {
+                key = "<leader>2";
+                mode = "n";
+                action = ":tabn 2<CR>";
+              }
+              {
+                key = "<leader>3";
+                mode = "n";
+                action = ":tabn 3<CR>";
+              }
+              {
+                key = "<leader>4";
+                mode = "n";
+                action = ":tabn 4<CR>";
+              }
+              {
+                key = "<leader>5";
+                mode = "n";
+                action = ":tabn 5<CR>";
+              }
+              {
+                key = "<leader>6";
+                mode = "n";
+                action = ":tabn 6<CR>";
+              }
+              {
+                key = "<leader>7";
+                mode = "n";
+                action = ":tabn 7<CR>";
+              }
+              {
+                key = "<leader>8";
+                mode = "n";
+                action = ":tabn 8<CR>";
+              }
+              {
+                key = "<leader>9";
+                mode = "n";
+                action = ":tabn 9<CR>";
+              }
 
-            # Quickfix keymaps
-            {
-              key = "<leader>qo";
-              mode = "n";
-              action = ":copen<CR>";
-            }
-            {
-              key = "<leader>qf";
-              mode = "n";
-              action = ":cfirst<CR>";
-            }
-            {
-              key = "<leader>qn";
-              mode = "n";
-              action = ":cnext<CR>";
-            }
-            {
-              key = "<leader>qp";
-              mode = "n";
-              action = ":cprev<CR>";
-            }
-            {
-              key = "<leader>ql";
-              mode = "n";
-              action = ":clast<CR>";
-            }
-            {
-              key = "<leader>qc";
-              mode = "n";
-              action = ":cclose<CR>";
-            }
+              # Diff keymaps
+              {
+                key = "<leader>cc";
+                mode = "n";
+                action = ":diffput<CR>";
+              }
+              {
+                key = "<leader>cj";
+                mode = "n";
+                action = ":diffget 1<CR>";
+              }
+              {
+                key = "<leader>ck";
+                mode = "n";
+                action = ":diffget 3<CR>";
+              }
+              {
+                key = "<leader>cn";
+                mode = "n";
+                action = "]c";
+              }
+              {
+                key = "<leader>cp";
+                mode = "n";
+                action = "[c";
+              }
 
-            # Telescope
-            {
-              key = "<leader>ff";
-              mode = "n";
-              action = ''lua require('telescope.builtin').find_files()'';
-            }
-            {
-              key = "<leader>fg";
-              mode = "n";
-              action = ''lua require('telescope.builtin').live_grep()'';
-            }
-            {
-              key = "<leader>fb";
-              mode = "n";
-              action = ''lua require('telescope.builtin').buffers()'';
-            }
-            {
-              key = "<leader>fh";
-              mode = "n";
-              action = ''lua require('telescope.builtin').help_tags()'';
-            }
-            {
-              key = "<leader>fs";
-              mode = "n";
-              action = ''lua require('telescope.builtin').current_buffer_fuzzy_find()'';
-            }
-            {
-              key = "<leader>fo";
-              mode = "n";
-              action = ''lua require('telescope.builtin').lsp_document_symbols()'';
-            }
-            {
-              key = "<leader>fi";
-              mode = "n";
-              action = ''lua require('telescope.builtin').lsp_incoming_calls()'';
-            }
+              # Quickfix keymaps
+              {
+                key = "<leader>qo";
+                mode = "n";
+                action = ":copen<CR>";
+              }
+              {
+                key = "<leader>qf";
+                mode = "n";
+                action = ":cfirst<CR>";
+              }
+              {
+                key = "<leader>qn";
+                mode = "n";
+                action = ":cnext<CR>";
+              }
+              {
+                key = "<leader>qp";
+                mode = "n";
+                action = ":cprev<CR>";
+              }
+              {
+                key = "<leader>ql";
+                mode = "n";
+                action = ":clast<CR>";
+              }
+              {
+                key = "<leader>qc";
+                mode = "n";
+                action = ":cclose<CR>";
+              }
 
-            # Harpoon
-            {
-              key = "<leader>ha";
-              mode = "n";
-              action = ''lua require("harpoon.mark").add_file()'';
-            }
-            {
-              key = "<leader>hh";
-              mode = "n";
-              action = ''lua require("harpoon.ui").toggle_quick_menu()'';
-            }
-            {
-              key = "<leader>h1";
-              mode = "n";
-              action = ''lua require("harpoon.ui").nav_file(1)'';
-            }
-            {
-              key = "<leader>h2";
-              mode = "n";
-              action = ''lua require("harpoon.ui").nav_file(2)'';
-            }
-            {
-              key = "<leader>h3";
-              mode = "n";
-              action = ''lua require("harpoon.ui").nav_file(3)'';
-            }
-            {
-              key = "<leader>h4";
-              mode = "n";
-              action = ''lua require("harpoon.ui").nav_file(4)'';
-            }
-            {
-              key = "<leader>h5";
-              mode = "n";
-              action = ''lua require("harpoon.ui").nav_file(5)'';
-            }
-            {
-              key = "<leader>h6";
-              mode = "n";
-              action = ''lua require("harpoon.ui").nav_file(6)'';
-            }
-            {
-              key = "<leader>h7";
-              mode = "n";
-              action = ''lua require("harpoon.ui").nav_file(7)'';
-            }
-            {
-              key = "<leader>h8";
-              mode = "n";
-              action = ''lua require("harpoon.ui").nav_file(8)'';
-            }
-            {
-              key = "<leader>h9";
-              mode = "n";
-              action = ''lua require("harpoon.ui").nav_file(9)'';
-            }
-          ];
-          languages = {
-            enableLSP = true;
-            enableTreesitter = true;
-            nix.enable = true;
-            nix.treesitter.enable = true;
-            ts.enable = true;
-            python.enable = true;
-            lua.enable = true;
-          };
-          options = {
-            tabstop = 2;
-            shiftwidth = 2;
+              # Telescope
+              {
+                key = "<leader>ff";
+                mode = "n";
+                action = ''lua require('telescope.builtin').find_files()'';
+              }
+              {
+                key = "<leader>fg";
+                mode = "n";
+                action = ''lua require('telescope.builtin').live_grep()'';
+              }
+              {
+                key = "<leader>fb";
+                mode = "n";
+                action = ''lua require('telescope.builtin').buffers()'';
+              }
+              {
+                key = "<leader>fh";
+                mode = "n";
+                action = ''lua require('telescope.builtin').help_tags()'';
+              }
+              {
+                key = "<leader>fs";
+                mode = "n";
+                action = ''lua require('telescope.builtin').current_buffer_fuzzy_find()'';
+              }
+              {
+                key = "<leader>fo";
+                mode = "n";
+                action = ''lua require('telescope.builtin').lsp_document_symbols()'';
+              }
+              {
+                key = "<leader>fi";
+                mode = "n";
+                action = ''lua require('telescope.builtin').lsp_incoming_calls()'';
+              }
+            ];
+            languages = {
+              enableLSP = true;
+              enableTreesitter = true;
+              nix.enable = true;
+              nix.treesitter.enable = true;
+              ts.enable = true;
+              python.enable = true;
+              lua.enable = true;
+            };
+            options = {
+              tabstop = 2;
+              shiftwidth = 2;
+            };
           };
         };
       };
+
     };
-
+    # programs.neovim = {
+    #
+    #   enable = true; 
+    #   defaultEditor = true;
+    # };
   };
-  # programs.neovim = {
-  #
-  #   enable = true; 
-  #   defaultEditor = true;
-  # };
-
   sops = {
     defaultSopsFile = ./secrets/github_ssh.yaml;
     age = {
@@ -486,21 +460,8 @@
     # dockerCompat = true;
   };
   virtualisation.docker.enable = true;
-  hardware.nvidia = {
-    modesetting.enable = true;
-    powerManagement.enable = true;
-    powerManagement.finegrained = false;
-    open = true;
-    nvidiaSettings = true;
-    dynamicBoost.enable = false;
-    package = config.boot.kernelPackages.nvidiaPackages.beta;
-  };
-  hardware.nvidia.prime = {
-    sync.enable = true;
-    intelBusId = "PCI:0:2:0";
-    nvidiaBusId = "PCI:1:0:0";
-  };
   specialisation = {
+
     on-the-go.configuration = {
       system.nixos.tags = [ "on-the-go" ];
       hardware.nvidia = {
@@ -768,10 +729,6 @@
   # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
-  hardware = {
-    bluetooth.enable = true; # enables support for Bluetooth
-    bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
-  };
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ 22 ];
   # networking.firewall.allowedUDPPorts = [ ... ];
@@ -791,23 +748,23 @@
   };
   system.activationScripts.generateGitHubPubKey = {
     text = ''
-      #!/bin/sh
-      # Ensure the .ssh directory exists for the user “undead”
-      mkdir -p /home/undead/.ssh
+          #!/bin/sh
+          # Ensure the .ssh directory exists for the user “undead”
+          mkdir -p /home/undead/.ssh
 
-      # If the public key is not already present, generate it
-      if [ ! -f /home/undead/.ssh/id_ed25519.pub ]; then
-        echo "Generating public key from decrypted private key..."
+          # If the public key is not already present, generate it
+          if [ ! -f /home/undead/.ssh/id_ed25519.pub ]; then
+            echo "Generating public key from decrypted private key..."
       ${pkgs.openssh}/bin/ssh-keygen -y -f /home/undead/.ssh/id_ed25519 > /home/undead/.ssh/id_ed25519.pub
 
-        # Replace the default comment (e.g., root@hostname) with the desired email
+            # Replace the default comment (e.g., root@hostname) with the desired email
 
-        # Set correct ownership and permissions (assuming the primary group for "undead" is "users")
-        chown undead:users /home/undead/.ssh/id_ed25519.pub
-        chmod 644 /home/undead/.ssh/id_ed25519.pub
+            # Set correct ownership and permissions (assuming the primary group for "undead" is "users")
+            chown undead:users /home/undead/.ssh/id_ed25519.pub
+            chmod 644 /home/undead/.ssh/id_ed25519.pub
       ${pkgs.gnused}/bin/sed -i 's/ [^ ]*$/ priyanshu.pansari@gmail.com/' /home/undead/.ssh/id_ed25519.pub
 
-      fi
+          fi
     '';
   };
   # This value determines the NixOS release from which the default
