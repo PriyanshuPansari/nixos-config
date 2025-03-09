@@ -345,41 +345,41 @@
             }
 
             # Telescope
-            {
-              key = "<leader>ff";
-              mode = "n";
-              action = ''lua require('telescope.builtin').find_files()'';
-            }
-            {
-              key = "<leader>fg";
-              mode = "n";
-              action = ''lua require('telescope.builtin').live_grep()'';
-            }
-            {
-              key = "<leader>fb";
-              mode = "n";
-              action = ''lua require('telescope.builtin').buffers()'';
-            }
-            {
-              key = "<leader>fh";
-              mode = "n";
-              action = ''lua require('telescope.builtin').help_tags()'';
-            }
-            {
-              key = "<leader>fs";
-              mode = "n";
-              action = ''lua require('telescope.builtin').current_buffer_fuzzy_find()'';
-            }
-            {
-              key = "<leader>fo";
-              mode = "n";
-              action = ''lua require('telescope.builtin').lsp_document_symbols()'';
-            }
-            {
-              key = "<leader>fi";
-              mode = "n";
-              action = ''lua require('telescope.builtin').lsp_incoming_calls()'';
-            }
+            # {
+            #   key = "<leader>ff";
+            #   mode = "n";
+            #   action = ''lua require('telescope.builtin').find_files()'';
+            # }
+            # {
+            #   key = "<leader>fg";
+            #   mode = "n";
+            #   action = ''lua require('telescope.builtin').live_grep()'';
+            # }
+            # {
+            #   key = "<leader>fb";
+            #   mode = "n";
+            #   action = ''lua require('telescope.builtin').buffers()'';
+            # }
+            # {
+            #   key = "<leader>fh";
+            #   mode = "n";
+            #   action = ''lua require('telescope.builtin').help_tags()'';
+            # }
+            # {
+            #   key = "<leader>fs";
+            #   mode = "n";
+            #   action = ''lua require('telescope.builtin').current_buffer_fuzzy_find()'';
+            # }
+            # {
+            #   key = "<leader>fo";
+            #   mode = "n";
+            #   action = ''lua require('telescope.builtin').lsp_document_symbols()'';
+            # }
+            # {
+            #   key = "<leader>fi";
+            #   mode = "n";
+            #   action = ''lua require('telescope.builtin').lsp_incoming_calls()'';
+            # }
           ];
           languages = {
             enableLSP = true;
