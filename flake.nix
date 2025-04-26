@@ -56,6 +56,7 @@
             ./hosts/PandorasBox/default.nix
             ./configuration.nix
             ./home.nix
+            ./programs/hyprland  # Added my-hyprland module
           ];
         };
 
