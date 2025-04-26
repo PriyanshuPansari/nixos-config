@@ -4,6 +4,7 @@
     sops-nix.url = "github:Mic92/sops-nix";
     # nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     raspberry-pi-nix.url = "github:tstat/raspberry-pi-nix";
+    waybar.url = "github:Alexays/Waybar/master";
     nix-gaming.url = "github:fufexan/nix-gaming";
     jovian-nixos.url = "github:Jovian-Experiments/jovian-NixOS";
     nvf.url = "github:notashelf/nvf";
@@ -12,13 +13,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     flake-utils.url = "github:numtide/flake-utils";
-    claude-desktop = {
-      url = "github:k3d3/claude-desktop-linux-flake";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
-      };
-    };
+    # claude-desktop = {
+    #   url = "github:k3d3/claude-desktop-linux-flake";
+    #   inputs = {
+    #     nixpkgs.follows = "nixpkgs";
+    #     flake-utils.follows = "flake-utils";
+    #   };
+    # };
     ags = {
       # last commit I had before ags switched to astal (thus breaking my config)
       # TODO: set up quickshell ASAP
@@ -33,7 +34,9 @@
     };
   };
 
-  outputs = { nixpkgs, sops-nix, raspberry-pi-nix, pre-commit-hooks, ... }@inputs:
+  description = "NixOS configuration";
+
+  outputs = { self, nixpkgs, sops-nix, raspberry-pi-nix, pre-commit-hooks, ... }@inputs:
     let
       system = "x86_64-linux"; # Adjust for your system
       pkgs = nixpkgs.legacyPackages.${system};
@@ -84,6 +87,15 @@
             raspberry-pi-nix.nixosModules.sd-image
             # ./hosts/RaspberryPi/default.nix  # Create this file for Raspberry Pi specific config
             ./pi_configuration.nix
+          ];
+        };
+
+        your-hostname = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux"; # Or your architecture
+          modules = [
+            # ...existing modules...
+            ./programs/nvf/default.nix
+            # ...other modules...
           ];
         };
       };
