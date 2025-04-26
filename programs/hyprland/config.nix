@@ -177,11 +177,11 @@ in
 
           # Application bindings
           bind = [
-            "$mainMod, Return, exec, kitty"
+            "$mainMod, Return, exec, ghostty"
             "$mainMod, Q, killactive,"
             "control alt, delete, exit,"
             "control alt, L, exec, hyprlock"
-            "$mainMod, E, exec, kitty yazi"
+            "$mainMod, E, exec, ghostty yazi"
             "$mainMod, F, togglefloating,"
             "$mainMod, b, exec, qutebrowser"
             "$mainMod, Space, exec, rofi -show drun"

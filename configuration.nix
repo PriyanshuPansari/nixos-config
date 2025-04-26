@@ -19,6 +19,7 @@
       inputs.sops-nix.nixosModules.sops
       ./programs/kanata # Import the kanata module
       ./programs/nvf/default.nix # Import nvf configuration
+      ./programs/ghostty
       ./hardware/nvidia.nix # Import NVIDIA-specific configuration
       ./security/ssh.nix # Import SSH and security configuration
     ];
@@ -26,6 +27,7 @@
   # Enable our custom Hyprland configuration
   programs.my-hyprland.enable = true;
   
+  programs.my-ghostty.enable = true;
   hardware.i2c.enable = true;
   services.tailscale.enable = true;
 
