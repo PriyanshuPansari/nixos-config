@@ -26,7 +26,7 @@
     
   # Enable our custom Hyprland configuration
   programs.my-hyprland.enable = true;
-  
+  programs.hyprland-scripts.enable = true;
   programs.my-ghostty.enable = true;
   hardware.i2c.enable = true;
   services.tailscale.enable = true;

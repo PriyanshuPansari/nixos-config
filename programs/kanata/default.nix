@@ -77,25 +77,20 @@
 
           ;; Aliases for all special behaviors
           (defalias
-            ;; Tap behavior for modifiers: type key and switch to nomods briefly
-            tap (multi
-              (layer-switch nomods)
-              (on-idle-fakekey to-base tap 20)
-            )
-            ;; Left hand modifiers
-            a (tap-hold-release-keys $tap-time $hold-time (multi a @tap) lmet $left-hand-keys)
-            s (tap-hold-release-keys $tap-time $hold-time (multi s @tap) lalt $left-hand-keys)
-            d (tap-hold-release-keys $tap-time $hold-time (multi d @tap) lctl $left-hand-keys)
-            f (tap-hold-release-keys $tap-time $hold-time (multi f @tap) lsft $left-hand-keys)
-            ;; Right hand modifiers
-            j (tap-hold-release-keys $tap-time $hold-time (multi j @tap) rsft $right-hand-keys)
-            k (tap-hold-release-keys $tap-time $hold-time (multi k @tap) rctl $right-hand-keys)
-            l (tap-hold-release-keys $tap-time $hold-time (multi l @tap) ralt $right-hand-keys)
-            ; (tap-hold-release-keys $tap-time $hold-time (multi ; @tap) rmet $right-hand-keys)
-            ;; Layer triggers: tap to type, hold to activate layer
-            r (tap-hold $tap-time $hold-time r (layer-while-held numpad))
-            u (tap-hold $tap-time $hold-time u (layer-while-held symbols))
-            t (tap-hold $tap-time $hold-time t (layer-while-held navigation))
+          ;; Tap behavior for modifiers: type key when tapped alone
+          a (tap-hold-release-keys $tap-time $hold-time a lmet $left-hand-keys)
+          s (tap-hold-release-keys $tap-time $hold-time s lalt $left-hand-keys)
+          d (tap-hold-release-keys $tap-time $hold-time d lctl $left-hand-keys)
+          f (tap-hold-release-keys $tap-time $hold-time f lsft $left-hand-keys)
+          ;; Right hand modifiers
+          j (tap-hold-release-keys $tap-time $hold-time j rsft $right-hand-keys)
+          k (tap-hold-release-keys $tap-time $hold-time k rctl $right-hand-keys)
+          l (tap-hold-release-keys $tap-time $hold-time l ralt $right-hand-keys)
+          ; (tap-hold-release-keys $tap-time $hold-time ; rmet $right-hand-keys)
+          ;; Layer triggers: tap to type, hold to activate layer
+          r (tap-hold $tap-time $hold-time r (layer-while-held numpad))
+          u (tap-hold $tap-time $hold-time u (layer-while-held symbols))
+          t (tap-hold $tap-time $hold-time t (layer-while-held navigation))
           )
         '';
       };
