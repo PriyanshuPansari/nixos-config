@@ -2,33 +2,106 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, lib, pkgs, inputs,  ... }:
+{ config
+, lib
+, pkgs
+, inputs
+, ...
+}:
 {
-    nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  imports =
+    [
+      inputs.home-manager.nixosModules.home-manager
+      inputs.nvf.nixosModules.default
+      inputs.jovian-nixos.nixosModules.default
+      inputs.nix-gaming.nixosModules.platformOptimizations
+      inputs.sops-nix.nixosModules.sops
+      ./programs/kanata # Import the kanata module
+      ./programs/nvf/default.nix # Import nvf configuration
+      ./hardware/nvidia.nix # Import NVIDIA-specific configuration
+      ./security/ssh.nix # Import SSH and security configuration
+    ];
+  hardware.i2c.enable = true;
+  services.tailscale.enable = true;
 
-hardware.graphics = {
-	enable =true;
-};
-boot.kernelModules = [ "uinput" ];
-hardware.uinput.enable = true;
-services.xserver.videoDrivers = ["nvidia"];
-services.fstrim.enable = true;
-programs.neovim = {
+  # environment.pathsToLink = [ "/libexec" ];
+  programs.nix-ld.enable = true;
+  programs.zsh.enable = true;
+  nixpkgs.config.cudaSupport = true;
+  services.power-profiles-daemon.enable = true;
+  home-manager.backupFileExtension = "backup";
+  hardware = {
+    graphics = {
+      enable = true;
+    };
+    uinput.enable = true;
+    bluetooth = {
+      powerOnBoot = true; # powers up the default Bluetooth controller on boot
+      enable = true; # enables support for Bluetooth
+    };
+    nvidia = {
+      modesetting.enable = true;
+      powerManagement.enable = true;
+      powerManagement.finegrained = false;
+      open = true;
+      nvidiaSettings = true;
+      dynamicBoost.enable = true;
+      package = config.boot.kernelPackages.nvidiaPackages.beta;
+      prime = {
+        sync.enable = true;
+        intelBusId = "PCI:0:2:0";
+        nvidiaBusId = "PCI:1:0:0";
+      };
+    };
+    nvidia-container-toolkit.enable = true;
 
-  enable = true;
-  defaultEditor = true;
-};
- hardware.nvidia-container-toolkit.enable = true;
-xdg.mime.defaultApplications = {
+  };
 
- "application/pdf" = "org.qutebrowser.qutebrowser.desktop";
-};
-services.upower.enable = true;
-xdg.portal = {enable =true; extraPortals = [pkgs.xdg-desktop-portal-hyprland];};
-programs.xwayland.enable = true;
-services.udev.extraRules = ''
-    KERNEL=="uinput", MODE="0660", GROUP="uinput", OPTIONS+="static_node=uinput"
+  programs = {
+    hyprland.enable = true;
+    direnv.enable = true;
+
+    zsh = {
+      # enable = true;
+      interactiveShellInit = ''
+        # Load Powerlevel10k
+        source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
+      '';
+    };
+
+
+    steam.gamescopeSession.enable = true;
+    # systemd.user.enable = true;
+    gamemode = {
+      enable = true;
+    };
+
+    steam = {
+      enable = true;
+      localNetworkGameTransfers.openFirewall = true;
+    };
+    git = {
+      enable = true;
+    };
+
+    xwayland.enable = true;
+
+  };
+
+  environment.etc."gitconfig".text = ''
+    [alias]
+      acp = "!f() { git add . && git commit -m \"$*\" && git push; }; f"
+      acpm = "!f() { git add . && git commit --amend --no-edit && git push -f; }; f"
+      acm = "!f() { git add . && git commit --amend --no-edit; }; f"
   '';
+
+  xdg.mime.defaultApplications = {
+
+    "application/pdf" = "org.qutebrowser.qutebrowser.desktop";
+  };
+
+  xdg.portal = { enable = true; extraPortals = [ pkgs.xdg-desktop-portal-hyprland ]; };
   users.groups.uinput = { };
 
   systemd.services.kanata-internalKeyboard.serviceConfig = {
@@ -37,132 +110,79 @@ services.udev.extraRules = ''
       "uinput"
     ];
   };
-# programs.nix-ld.enable = true;
-#   programs.nix-ld.libraries = with pkgs; [
-    # Add any missing dynamic libraries for unpackaged programs
-    # here, NOT in environment.systemPackages
-  # libxkbcommon
-  # xorg.libxcb
-  # ];
-  virtualisation.podman = {
-  enable = true;
-  dockerCompat = true;
-};
 
-hardware.nvidia = {
-	modesetting.enable = true;
-	powerManagement.enable = true;
-	powerManagement.finegrained = false;
-	open = true;
-	nvidiaSettings = true;
-	dynamicBoost.enable = false;
-	package = config.boot.kernelPackages.nvidiaPackages.beta;
-};
-  hardware.nvidia.prime = {
-    sync.enable = true;
-    intelBusId = "PCI:0:2:0";
-    nvidiaBusId = "PCI:1:0:0";
+  virtualisation.podman = {
+    enable = true;
   };
-specialisation = {
-  on-the-go.configuration = {
-    system.nixos.tags = [ "on-the-go" ];
-    hardware.nvidia = {
-      prime.offload.enable = lib.mkForce true;
-      prime.offload.enableOffloadCmd = lib.mkForce true;
-      powerManagement.finegrained = lib.mkForce true;
-      prime.sync.enable = lib.mkForce false;
+  virtualisation.docker.enable = true;
+  specialisation = {
+
+    on-the-go.configuration = {
+      system.nixos.tags = [ "on-the-go" ];
+      hardware.nvidia = {
+        prime = {
+          offload.enable = lib.mkForce true;
+          offload.enableOffloadCmd = lib.mkForce true;
+          sync.enable = lib.mkForce false;
+        };
+        powerManagement.finegrained = lib.mkForce true;
+      };
+    };
+    gaming.configuration = {
+      system.nixos.tags = [ "gaming" ];
+      services.displayManager.sddm.enable = lib.mkForce false;
+      jovian.steam = {
+        enable = true;
+        desktopSession = "hyprland";
+        autoStart = true;
+        user = "undead";
+      };
+
+      environment.sessionVariables = {
+        LIBVA_DRIVER_NAME = "nvidia";
+        __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+        VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.x86_64.json";
+
+        __NV_PRIME_RENDER_OFFLOAD = "1";
+        NVD_BACKEND = "direct";
+        GBM_BACKEND = "nvidia-drm";
+
+        STEAM_RUNTIME_PREFER_HOST_LIBRARIES = "1";
+        DXVK_ASYNC = "1";
+        PROTON_HIDE_NVIDIA_GPU = "0";
+
+        GAMESCOPE_DISABLE_BUFFERING = "1";
+        GAMESCOPE_FORCE_FULLSCREEN = "1";
+      };
+      programs.steam.platformOptimizations.enable = lib.mkForce true;
     };
   };
-};
 
-services.kanata = {
-    enable = true;
-    keyboards = {
-      internalKeyboard = {
-        devices = [
-          # Replace the paths below with the appropriate device paths for your setup.
-          # Use `ls /dev/input/by-path/` to find your keyboard devices.
-          "/dev/input/by-id/usb-SEMICO_Redgear_Shadow_Blade_Mechanical_Keyboard-event-kbd"
-          "/dev/input/by-id/usb-ITE_Tech._Inc._ITE_Device_8176_-event-kbd"
-          "/dev/usb/by-id/usb-SINO_WEALTH_Bluetooth_Keyboard-event-kbd"
-        ];
-        extraDefCfg = "process-unmapped-keys yes";
-        config = ''
-(defsrc
- a   s   d   f   j   k   l   ;
-)
-(defvar
-  tap-time 200
-  hold-time 150
+  boot = {
+    kernelModules = [ "uinput" "ddcci_backlight" ];
+    kernelPackages = pkgs.linuxPackages_latest;
+    extraModulePackages = with config.boot.kernelPackages; [
+      config.boot.kernelPackages.ddcci-driver
+    ];
+    loader.systemd-boot.enable = true;
+    binfmt.emulatedSystems = [ "aarch64-linux" ];
+    kernelParams = [
+      "ddcci.autoprobe_addrs=0x37"
+    ];
+    extraModprobeConfig = ''
+      options nvidia NVreg_TemporaryFilePath=/var/tmp
+    '';
 
-  left-hand-keys (
-    q w e r t
-    a s d f g
-    z x c v b
-  )
-  right-hand-keys (
-    y u i o p
-    h j k l ;
-    n m , . /
-  )
-)
-(deflayer base
-  @a  @s  @d  @f  @j  @k  @l  @;
-)
+    loader.efi.canTouchEfiVariables = true;
+  };
 
-(deflayer nomods
- a   s   d   f   j   k   l   ;
-)
-
-(deflayer arrows
-  _   _   _   _   left down up   right
-)
-
-(deffakekeys
-  to-base (layer-switch base)
-)
-(defalias
-  tap (multi
-    (layer-switch nomods)
-    (on-idle-fakekey to-base tap 20)
-  )
-
-  a (tap-hold-release-keys $tap-time $hold-time (multi a @tap) lmet $left-hand-keys)
-  s (tap-hold-release-keys $tap-time $hold-time (multi s @tap) lalt $left-hand-keys)
-  d (tap-hold-release-keys $tap-time $hold-time (multi d @tap) lctl $left-hand-keys)
-  f (tap-hold-release-keys $tap-time $hold-time (multi f @tap) lsft $left-hand-keys)
-  j (tap-hold-release-keys $tap-time $hold-time (multi j @tap) rsft $right-hand-keys)
-  k (tap-hold-release-keys $tap-time $hold-time (multi k @tap) rctl $right-hand-keys)
-  l (tap-hold-release-keys $tap-time $hold-time (multi l @tap) ralt $right-hand-keys)
-  ; (tap-hold-release-keys $tap-time $hold-time (multi ; @tap) rmet $right-hand-keys)
-  ;; caps (tap-hold-press $tap-time $hold-time (multi esc) (layer-switch arrows))
-)   
-(defalias
-  @j (layer-switch arrows )
-  @k (layer-switch arrows )
-  @l (layer-switch arrows )
-  @; (layer-switch arrows )
-)
-'';      
-};  # Bootloader.
-      };
-      };
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Enable networking
   networking.networkmanager.enable = true;
-
-  # Set your time zone.
   time.timeZone = "Asia/Kolkata";
+  services.displayManager.sddm = {
+    enable = true;
+    wayland.enable = true;
+  };
 
-  # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
 
   i18n.supportedLocales = [
@@ -170,23 +190,59 @@ services.kanata = {
     "es_CO.UTF-8/UTF-8"
   ];
 
-  # Configure keymap in X11
-  services.xserver.xkb = {
-    layout = "us";
-    variant = "";
+  services = {
+    fstrim.enable = true;
+    blueman.enable = true;
+
+    xserver.videoDrivers = [ "nvidia" ];
+    upower.enable = true;
+    pulseaudio.enable = false;
+    openssh.enable = true;
+    pipewire = {
+      enable = true;
+      alsa.enable = true;
+      alsa.support32Bit = true;
+      pulse.enable = true;
+    };
   };
 
-
-  # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
   environment.systemPackages = with pkgs; [
-    vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    vim
+    mangohud
+    libgccjit
+    nodejs_20
+      cups
+  cups-filters
+  hplip
+  system-config-printer
+    stdenv.cc.cc
+    gcc
+    vscode
+    code-server
+    bc
+    cudaPackages.cudatoolkit
+    ddcutil
+    grim
+    slurp
+    cheese
+    python313
+    python313Packages.i3ipc
+    unzip
+    clipit
+    obsidian
+    sops
+    github-desktop
+    ani-cli
+    inotify-tools
+    nm-tray
+    tldr
+    google-chrome
     libreoffice
     distrobox
     swww
+    eza
     uv
     wget
     git
@@ -213,62 +269,30 @@ services.kanata = {
     btop
     pyprland
     firefox
-    code-cursor
-    # inputs.helix.packages."${pkgs.system}".helix
-    # inputs.xremap.packages."${pkgs.system}".xremap
+    sshfs
     wl-clipboard
     zsh
   ];
-fonts.packages = with pkgs; [
-	nerd-fonts.droid-sans-mono
-	noto-fonts
-];
- programs.hyprland.enable = true;
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
+  services.printing = {
+  enable = true;
+  drivers = [ pkgs.hplip ];
+};
 
-  # List services that you want to enable:
+services.avahi = {
+  enable = true;
+  nssmdns = true;
+  openFirewall = true;
+};
+  fonts.packages = with pkgs; [
+    nerd-fonts.droid-sans-mono
+    noto-fonts
+  ];
 
-  # Enable the OpenSSH daemon.
-  services.openssh.enable = true;
-  hardware.bluetooth.enable = true; # enables support for Bluetooth
-  hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
-  services.blueman.enable = true;
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ 22 ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
   networking.firewall.enable = false;
-  services.pulseaudio.enable = false;
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-    # Uncomment the following line if you want to use JACK applications
-    # jack.enable = true;
-  };
-    users.defaultUserShell = pkgs.zsh;
-   programs.zsh = {
-    enable = true;
-    interactiveShellInit = ''
-      # Load Powerlevel10k
-      source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
-    '';
-  };
 
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
+  security.rtkit.enable = true;
+  users.defaultUserShell = pkgs.zsh;
+
   system.stateVersion = "24.11"; # Did you read the comment?
 
 }
