@@ -1,6 +1,6 @@
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
+# and in the NixOS manual (accessible by running 'nixos-help').
 
 { config
 , lib
@@ -22,6 +22,10 @@
       ./hardware/nvidia.nix # Import NVIDIA-specific configuration
       ./security/ssh.nix # Import SSH and security configuration
     ];
+    
+  # Enable our custom Hyprland configuration
+  programs.my-hyprland.enable = true;
+  
   hardware.i2c.enable = true;
   services.tailscale.enable = true;
 
@@ -213,10 +217,10 @@
     mangohud
     libgccjit
     nodejs_20
-      cups
-  cups-filters
-  hplip
-  system-config-printer
+    cups
+    cups-filters
+    hplip
+    system-config-printer
     stdenv.cc.cc
     gcc
     vscode
@@ -274,15 +278,15 @@
     zsh
   ];
   services.printing = {
-  enable = true;
-  drivers = [ pkgs.hplip ];
-};
+    enable = true;
+    drivers = [ pkgs.hplip ];
+  };
 
-services.avahi = {
-  enable = true;
-  nssmdns = true;
-  openFirewall = true;
-};
+  services.avahi = {
+    enable = true;
+    nssmdns = true;
+    openFirewall = true;
+  };
   fonts.packages = with pkgs; [
     nerd-fonts.droid-sans-mono
     noto-fonts
