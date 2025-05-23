@@ -9,8 +9,8 @@
   users.users.pandora = {
     isNormalUser = true;
     description = "PriyanshuPansari";
-    extraGroups = [ "networkmanager" "wheel" ];
     # packages = with pkgs; [];
+    extraGroups = [ "networkmanager" "wheel" "docker" "gamemode" ];
   };
     services.getty.autologinUser = "pandora";
 

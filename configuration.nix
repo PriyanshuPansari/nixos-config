@@ -1,4 +1,4 @@
-# Edit this configuration file to define what should be installed on
+#https://news.ycombinator.com/item?id=41096486 Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
@@ -13,11 +13,15 @@
       inputs.jovian-nixos.nixosModules.default
       inputs.nix-gaming.nixosModules.platformOptimizations
       inputs.sops-nix.nixosModules.sops
+      ./cachix.nix
     ];
-
-  jovian.steam.enable = true;
-
+  # hardware.opentabletdriver.enable = true;
+  programs.nix-ld.enable = true;
+  services.logind.lidSwitchExternalPower = "ignore";
+  services.xserver.wacom.enable = true;
   home-manager.backupFileExtension = "backup";
+  services.tailscale.enable = true;
+  services.openssh.settings.X11Forwarding = true;
   programs.steam.gamescopeSession.enable = true;
   # systemd.user.enable = true;
   programs.gamemode = {
@@ -106,8 +110,8 @@
   #    mode = "0600";
   #  };
   sops.secrets.github_ssh_key = {
-    path = "/home/undead/.ssh/id_ed25519";
-    owner = "undead";
+    path = "/home/pandora/.ssh/id_ed25519";
+    owner = "pandora";
   };
   hardware.nvidia-container-toolkit.enable = true;
   xdg.mime.defaultApplications = {
@@ -163,12 +167,28 @@
         powerManagement.finegrained = lib.mkForce true;
         prime.sync.enable = lib.mkForce false;
       };
+      services.tlp = {
+        enable = true;
+        settings = {
+          CPU_SCALING_GOVERNOR_ON_AC = "performance";
+          CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+          CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
+          CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
+          CPU_MIN_PERF_ON_BAT = 0;
+          CPU_MAX_PERF_ON_BAT = 50;
+        };
+      };
+      services.auto-cpufreq.enable = true;
+
+      # Thermald for temperature management
+      services.thermald.enable = true;
     };
     gaming.configuration={
       system.nixos.tags = [ "gaming" ];
       jovian.steam={
+        enable = true;
         autoStart = true;
-        user = "undead";
+        user = "pandora";
       };
 
       # NVIDIA-specific environment variables for gaming
@@ -205,6 +225,7 @@
           "/dev/input/by-id/usb-SEMICO_Redgear_Shadow_Blade_Mechanical_Keyboard-event-kbd"
           "/dev/input/by-id/usb-ITE_Tech._Inc._ITE_Device_8176_-event-kbd"
           "/dev/usb/by-id/usb-SINO_WEALTH_Bluetooth_Keyboard-event-kbd"
+          "/dev/input/by-id/usb-ITE_Tech._Inc._ITE_Device_8910_-event-kbd"
         ];
         extraDefCfg = "process-unmapped-keys yes";
         config = ''
@@ -310,7 +331,7 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
-programs.direnv.enable = true;
+  programs.direnv.enable = true;
   # Set your time zone.
   time.timeZone = "Asia/Kolkata";
 
@@ -337,8 +358,17 @@ programs.direnv.enable = true;
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    networkmanager-openconnect
+    obsidian
+    openconnect
+    ani-cli
+    libwacom
     sops
     nm-tray
+    powertop
+    tlp
+    acpi
+    auto-cpufreq
     libreoffice
     distrobox
     swww
@@ -424,27 +454,27 @@ programs.direnv.enable = true;
     wantedBy = [ "default.target" ];
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "${pkgs.openssh}/bin/ssh-add /home/undead/.ssh/id_ed25519";
+      ExecStart = "${pkgs.openssh}/bin/ssh-add /home/pandora/.ssh/id_ed25519";
       RemainAfterExit = true;
     };
   };
   system.activationScripts.generateGitHubPubKey = {
     text = ''
     #!/bin/sh
-    # Ensure the .ssh directory exists for the user “undead”
-    mkdir -p /home/undead/.ssh
+    # Ensure the .ssh directory exists for the user “pandora”
+    mkdir -p /home/pandora/.ssh
 
     # If the public key is not already present, generate it
-    if [ ! -f /home/undead/.ssh/id_ed25519.pub ]; then
+    if [ ! -f /home/pandora/.ssh/id_ed25519.pub ]; then
       echo "Generating public key from decrypted private key..."
-      ${pkgs.openssh}/bin/ssh-keygen -y -f /home/undead/.ssh/id_ed25519 > /home/undead/.ssh/id_ed25519.pub
+      ${pkgs.openssh}/bin/ssh-keygen -y -f /home/pandora/.ssh/id_ed25519 > /home/pandora/.ssh/id_ed25519.pub
 
       # Replace the default comment (e.g., root@hostname) with the desired email
 
-      # Set correct ownership and permissions (assuming the primary group for "undead" is "users")
-      chown undead:users /home/undead/.ssh/id_ed25519.pub
-      chmod 644 /home/undead/.ssh/id_ed25519.pub
-      ${pkgs.gnused}/bin/sed -i 's/ [^ ]*$/ priyanshu.pansari@gmail.com/' /home/undead/.ssh/id_ed25519.pub
+      # Set correct ownership and permissions (assuming the primary group for "pandora" is "users")
+      chown pandora:users /home/pandora/.ssh/id_ed25519.pub
+      chmod 644 /home/pandora/.ssh/id_ed25519.pub
+      ${pkgs.gnused}/bin/sed -i 's/ [^ ]*$/ priyanshu.pansari@gmail.com/' /home/pandora/.ssh/id_ed25519.pub
 
     fi
     '';
