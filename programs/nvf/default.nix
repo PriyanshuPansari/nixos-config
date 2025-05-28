@@ -9,7 +9,8 @@
     # Settings for NVF
     settings = {
       vim = {
-        useSystemClipboard = true;
+        # useSystemClipboard = true;
+        clipboard.registers = "unnamedplus";
         viAlias = false;
         vimAlias = true;
         theme = {
@@ -17,6 +18,9 @@
           name = "tokyonight";
           style = "night";
         };
+        # utility.images.image-nvim.enable = true;
+        # utility.images.image-nvim.setupOpts.backend ="kitty";
+        # utility.images.img-clip.enable = true;
         statusline.lualine.enable = true;
         telescope.enable = true;
         assistant.copilot.enable = true;

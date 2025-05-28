@@ -13,6 +13,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     flake-utils.url = "github:numtide/flake-utils";
+
     # claude-desktop = {
     #   url = "github:k3d3/claude-desktop-linux-flake";
     #   inputs = {
@@ -36,13 +37,13 @@
 
   description = "NixOS configuration";
 
-  outputs = { self, nixpkgs, sops-nix, raspberry-pi-nix, pre-commit-hooks, ... }@inputs:
+  outputs = { self, nixpkgs, sops-nix, raspberry-pi-nix, pre-commit-hooks,... }@inputs:
     let
       system = "x86_64-linux"; # Adjust for your system
-      pkgs = nixpkgs.legacyPackages.${system};
-      pre-commit-check = import ./.pre-commit.nix {
-        inherit pre-commit-hooks system;
-      };
+      # pkgs = nixpkgs.legacyPackages.${system};
+      # pre-commit-check = import ./.pre-commit.nix {
+      #   inherit pre-commit-hooks system;
+      # };
 
     in
     {
@@ -100,18 +101,18 @@
           ];
         };
       };
-      devShells.${system}.default = pkgs.mkShell {
-        buildInputs = with pkgs; [
-          pre-commit
-          nixpkgs-fmt
-          statix
-          deadnix
-        ];
-        inherit (pre-commit-check) shellHook;
-      };
+      # devShells.${system}.default = pkgs.mkShell {
+      #   buildInputs = with pkgs; [
+      #     pre-commit
+      #     nixpkgs-fmt
+      #     statix
+      #     deadnix
+      #   ];
+      #   inherit (pre-commit-check) shellHook;
+      # };
 
       # You can also make your repository Nix CI friendly with this:
-      checks.${system}.pre-commit-check = pre-commit-check;
+      # checks.${system}.pre-commit-check = pre-commit-check;
       # packages.aarch64-linux.raspberry-pi-image = self.nixosConfigurations.RaspberryPi.config.system.build.sdImage;
       # packages.x86_64-linux.raspberry-pi-image = self.nixosConfigurations.RaspberryPi.config.system.build.sdImage;
     };

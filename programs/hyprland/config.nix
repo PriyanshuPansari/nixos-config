@@ -12,6 +12,7 @@ in
       enable = true;
       package = cfg.package;
       xwayland.enable = true;
+      withUWSM  = true;
     };
 
     # Home-manager configuration for the undead user
@@ -26,7 +27,7 @@ in
           monitor = [
             ",preferred,auto,auto"
             "eDP-1,1920x1080@144.00,0x0,1.0"
-            "HDMI-A-1,1920x1080@100.00,0x-1080,1"
+            "HDMI-A-1,1920x1080@144.00,0x-1080,1"
           ];
 
           # General configuration
@@ -181,7 +182,7 @@ in
             "$mainMod, Q, killactive,"
             "control alt, delete, exit,"
             "control alt, L, exec, hyprlock"
-            "$mainMod, E, exec, ghostty yazi"
+            "$mainMod, E, exec, ghostty -e yazi"
             "$mainMod, F, togglefloating,"
             "$mainMod, b, exec, qutebrowser"
             "$mainMod, Space, exec, rofi -show drun"
@@ -194,7 +195,7 @@ in
             # Media and custom bindings
             "$mainMod, A, exec, ani-cli --rofi"
             "$mainMod shift, A, exec, ani-cli --rofi -c"
-            "$mainMod, R, exec, hyprland-wallpaper"
+            "$mainMod, R, exec, wallpaper_scroll"
             "$mainMod, W, exec, rofi -config ~/.config/rofi/config_select.rasi -show"
             "$mainMod, G, exec, rofi -config ~/.config/rofi/game.rasi -show"
             
@@ -204,15 +205,15 @@ in
             "$mainMod, 316, exec, pypr zoom"
             
             # Screenshot bindings
-            "$mainMod, Print, exec, hyprland-screenshot --now"
-            "$mainMod SHIFT, Print, exec, hyprland-screenshot --area"
-            "$mainMod CTRL, Print, exec, hyprland-screenshot --in5"
-            "$mainMod CTRL SHIFT, Print, exec, hyprland-screenshot --in10"
-            "ALT, Print, exec, hyprland-screenshot --active"
-            "$mainMod SHIFT, S, exec, hyprland-screenshot --swappy"
+            "$mainMod, Print, exec, screenshot --now"
+            ", Print, exec, screenshot --area"
+            "$mainMod CTRL, Print, exec, screenshot --in5"
+            "$mainMod SHIFT, Print, exec, screenshot --in10"
+            "ALT, Print, exec, screenshot --active"
+            "$mainMod  CTRL SHIFT, S, exec, screenshot --swappy"
             
             # Waybar toggle
-            ", super_l, exec, pkill -SIGUSR1 waybar"
+            "$mainMod, x, exec, pkill -SIGUSR1 waybar"
             "$mainMod alt, h, exec, ~/.config/hypr/scripts/keybinds_hint.sh"
             
             # Window focus and movement
@@ -270,10 +271,10 @@ in
             ", mouse:276, workspace, -1"
             
             # Volume and brightness controls
-            ", XF86AudioRaiseVolume, exec, hyprland-volume --inc"
-            ", XF86AudioLowerVolume, exec, hyprland-volume --dec"
-            ", XF86AudioMute, exec, hyprland-volume --toggle"
-            ", XF86AudioMicMute, exec, hyprland-volume --toggle-mic"
+            ", XF86AudioRaiseVolume, exec, volume --inc"
+            ", XF86AudioLowerVolume, exec, volume --dec"
+            ", XF86AudioMute, exec, volume --toggle"
+            ", XF86AudioMicMute, exec, volume --toggle-mic"
             ", XF86MonBrightnessUp, exec, brightnessctl s 10%+"
             ", XF86MonBrightnessDown, exec, brightnessctl s 10%-"
             
@@ -290,10 +291,10 @@ in
             "$mainMod SHIFT, h, resizeactive, -10 0"
             "$mainMod SHIFT, k, resizeactive, 0 -10"
             "$mainMod SHIFT, j, resizeactive, 0 10"
-            ", XF86AudioRaiseVolume, exec, hyprland-volume --inc"
-            ", XF86AudioLowerVolume, exec, hyprland-volume --dec"
-            ", XF86AudioMute, exec, hyprland-volume --toggle"
-            ", XF86AudioMicMute, exec, hyprland-volume --toggle-mic"
+            ", XF86AudioRaiseVolume, exec, volume --inc"
+            ", XF86AudioLowerVolume, exec, volume --dec"
+            ", XF86AudioMute, exec, volume --toggle"
+            ", XF86AudioMicMute, exec, volume --toggle-mic"
             ", XF86MonBrightnessUp, exec, brightnessctl s 10%+"
             ", XF86MonBrightnessDown, exec, brightnessctl s 10%-"
           ];

@@ -91,7 +91,7 @@ let
         fi
         
         # Set wallpaper with swww
-        swww img "$SOURCE_IMAGE" --transition-type grow --transition-pos 0.5,0.5
+        swww img "$SOURCE_IMAGE" --transition-type grow --transition-pos 0.5,0.5 --resize fit
     }
     
     main
@@ -200,7 +200,7 @@ let
     
     # Configuration
     VOLUME_STEP=5
-    MAX_VOLUME=100
+    MAX_VOLUME=150
     
     # Function for notification
     notify() {

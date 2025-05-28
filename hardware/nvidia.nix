@@ -39,7 +39,7 @@
     services.xserver.displayManager.sddm.enable = lib.mkForce false;
     jovian.steam = {
       enable = true;
-      desktopSession = "hyprland";
+      desktopSession = "hyprland-uwsm";
       autoStart = true;
       user = "undead";
     };

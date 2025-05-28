@@ -1,4 +1,4 @@
-# Edit this configuration file to define what should be installed on
+#Dreamlab@224 Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running 'nixos-help').
 
@@ -46,26 +46,26 @@
       powerOnBoot = true; # powers up the default Bluetooth controller on boot
       enable = true; # enables support for Bluetooth
     };
-    nvidia = {
-      modesetting.enable = true;
-      powerManagement.enable = true;
-      powerManagement.finegrained = false;
-      open = true;
-      nvidiaSettings = true;
-      dynamicBoost.enable = true;
-      package = config.boot.kernelPackages.nvidiaPackages.beta;
-      prime = {
-        sync.enable = true;
-        intelBusId = "PCI:0:2:0";
-        nvidiaBusId = "PCI:1:0:0";
-      };
-    };
+    # nvidia = {
+    #   modesetting.enable = true;
+    #   powerManagement.enable = true;
+    #   powerManagement.finegrained = false;
+    #   open = true;
+    #   nvidiaSettings = true;
+    #   dynamicBoost.enable = false;
+    #   package = config.boot.kernelPackages.nvidiaPackages.beta;
+    #   prime = {
+    #     sync.enable = true;
+    #     intelBusId = "PCI:0:2:0";
+    #     nvidiaBusId = "PCI:1:0:0";
+    #   };
+    # };
     nvidia-container-toolkit.enable = true;
 
   };
 
   programs = {
-    hyprland.enable = true;
+    # hyprland.enable = true;
     direnv.enable = true;
 
     zsh = {
@@ -117,52 +117,53 @@
     ];
   };
 
-  virtualisation.podman = {
-    enable = true;
-  };
+  # virtualisation.podman = {
+  #   enable = true;
+  # };
   virtualisation.docker.enable = true;
-  specialisation = {
-
-    on-the-go.configuration = {
-      system.nixos.tags = [ "on-the-go" ];
-      hardware.nvidia = {
-        prime = {
-          offload.enable = lib.mkForce true;
-          offload.enableOffloadCmd = lib.mkForce true;
-          sync.enable = lib.mkForce false;
-        };
-        powerManagement.finegrained = lib.mkForce true;
-      };
-    };
-    gaming.configuration = {
-      system.nixos.tags = [ "gaming" ];
-      services.displayManager.sddm.enable = lib.mkForce false;
-      jovian.steam = {
-        enable = true;
-        desktopSession = "hyprland";
-        autoStart = true;
-        user = "undead";
-      };
-
-      environment.sessionVariables = {
-        LIBVA_DRIVER_NAME = "nvidia";
-        __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-        VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.x86_64.json";
-
-        __NV_PRIME_RENDER_OFFLOAD = "1";
-        NVD_BACKEND = "direct";
-        GBM_BACKEND = "nvidia-drm";
-
-        STEAM_RUNTIME_PREFER_HOST_LIBRARIES = "1";
-        DXVK_ASYNC = "1";
-        PROTON_HIDE_NVIDIA_GPU = "0";
-
-        GAMESCOPE_DISABLE_BUFFERING = "1";
-        GAMESCOPE_FORCE_FULLSCREEN = "1";
-      };
-      programs.steam.platformOptimizations.enable = lib.mkForce true;
-    };
-  };
+  # virtualisation.docker.enableNvidia = true;
+  # specialisation = {
+  #
+  #   on-the-go.configuration = {
+  #     system.nixos.tags = [ "on-the-go" ];
+  #     hardware.nvidia = {
+  #       prime = {
+  #         offload.enable = lib.mkForce true;
+  #         offload.enableOffloadCmd = lib.mkForce true;
+  #         sync.enable = lib.mkForce false;
+  #       };
+  #       powerManagement.finegrained = lib.mkForce true;
+  #     };
+  #   };
+  #   gaming.configuration = {
+  #     system.nixos.tags = [ "gaming" ];
+  #     services.displayManager.sddm.enable = lib.mkForce false;
+  #     jovian.steam = {
+  #       enable = true;
+  #       desktopSession = "hyprland-uwsm";
+  #       autoStart = true;
+  #       user = "undead";
+  #     };
+  #
+  #     environment.sessionVariables = {
+  #       LIBVA_DRIVER_NAME = "nvidia";
+  #       __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+  #       VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.x86_64.json";
+  #
+  #       __NV_PRIME_RENDER_OFFLOAD = "1";
+  #       NVD_BACKEND = "direct";
+  #       GBM_BACKEND = "nvidia-drm";
+  #
+  #       STEAM_RUNTIME_PREFER_HOST_LIBRARIES = "1";
+  #       DXVK_ASYNC = "1";
+  #       PROTON_HIDE_NVIDIA_GPU = "0";
+  #
+  #       GAMESCOPE_DISABLE_BUFFERING = "1";
+  #       GAMESCOPE_FORCE_FULLSCREEN = "1";
+  #     };
+  #     programs.steam.platformOptimizations.enable = lib.mkForce true;
+  #   };
+  # };
 
   boot = {
     kernelModules = [ "uinput" "ddcci_backlight" ];
@@ -216,6 +217,9 @@
 
   environment.systemPackages = with pkgs; [
     vim
+    openconnect
+    # globalprotect-openconnect
+    gpclient
     mangohud
     libgccjit
     nodejs_20
@@ -271,12 +275,15 @@
     pamixer
     zsh-powerlevel10k
     ripgrep
+    nvidia-container-toolkit
     playerctl
     btop
     pyprland
     firefox
     sshfs
     wl-clipboard
+    nvidia-docker
+    nvidia-container-toolkit
     zsh
   ];
   services.printing = {
