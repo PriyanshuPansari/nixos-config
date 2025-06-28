@@ -9,7 +9,7 @@
   imports = 
     [
       inputs.home-manager.nixosModules.home-manager
-      inputs.nvf.nixosModules.default
+      # inputs.nvf.nixosModules.default
       inputs.jovian-nixos.nixosModules.default
       inputs.nix-gaming.nixosModules.platformOptimizations
       inputs.sops-nix.nixosModules.sops
@@ -50,53 +50,56 @@
 
   sops.age.generateKey = true;
 
-  programs.nvf = {
-    enable = true;
-    enableManpages = true;
-    # your settings need to go into the settings attribute set
-    # most settings are documented in the appendix
-    settings = {
-      vim ={
-        useSystemClipboard = true;
-        viAlias = false;
-        vimAlias = true;
-        theme = {
-          enable = true;
-          name = "tokyonight";
-          style = "night";
-        };
-        statusline.lualine.enable = true;
-        telescope.enable = true;
-        autocomplete.nvim-cmp.enable = true;
-        utility.yazi-nvim.enable = true;
-        extraLuaFiles = [  (builtins.path {
-          path = ./programs/editor/nvim/init.lua;
-          name = "init-lua";
-        }) ];
-        keymaps =[
-          {
-            key = "<leader>f";
-            mode = "n";
-            silent = true;
-            action = ":vim.lsp.buf.format";
-          }
-        ];
-        languages = {
-          enableLSP = true;
-          enableTreesitter = true;
-          nix.enable = true;
-          nix.treesitter.enable = true;
-          ts.enable = true;
-          python.enable = true;
-          lua.enable = true;
-        };
-        options = {
-          tabstop=2;
-          shiftwidth=2;
-        };
-      };
-    };
-  };
+  programs.neovim = {
+  enable = true;
+};
+  # programs.nvf = {
+  #   enable = true;
+  #   enableManpages = true;
+  #   # your settings need to go into the settings attribute set
+  #   # most settings are documented in the appendix
+  #   settings = {
+  #     vim ={
+  #       # useSystemClipboard = true;
+  #       # viAlias = false;
+  #       # vimAlias = true;
+  #       # theme = {
+  #       #   enable = true;
+  #       #   name = "tokyonight";
+  #       #   style = "night";
+  #       # };
+  #       # statusline.lualine.enable = true;
+  #       # telescope.enable = true;
+  #       # autocomplete.nvim-cmp.enable = true;
+  #       # utility.yazi-nvim.enable = true;
+  #       extraLuaFiles = [  (builtins.path {
+  #         path = ./programs/editor/nvim/init.lua;
+  #         name = "init-lua";
+  #       }) ];
+  #       # keymaps =[
+  #       #   {
+  #       #     key = "<leader>f";
+  #       #     mode = "n";
+  #       #     silent = true;
+  #       #     action = ":vim.lsp.buf.format";
+  #       #   }
+  #       # ];
+  #       # languages = {
+  #       #   enableLSP = true;
+  #       #   enableTreesitter = true;
+  #       #   nix.enable = true;
+  #       #   nix.treesitter.enable = true;
+  #       #   ts.enable = true;
+  #       #   python.enable = true;
+  #       #   lua.enable = true;
+  #       # };
+  #       # options = {
+  #       #   tabstop=2;
+  #       #   shiftwidth=2;
+  #       # };
+  #     };
+  #   };
+  # };
 
 
 
@@ -360,6 +363,7 @@
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     networkmanager-openconnect
     obsidian
+    linux-wifi-hotspot
     openconnect
     ani-cli
     libwacom
