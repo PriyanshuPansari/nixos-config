@@ -9,8 +9,7 @@
 			env = [
    			   "HYPRSHOT_DIR,/home/undead/Pictures/Screenshots"
  			   ];
-			monitor = [ ",preferred,auto,1" ];
-
+			source = [" ~/.config/hypr/monitors.conf"];
 			input = {
 				follow_mouse = 1;
 				touchpad.natural_scroll = false;
