@@ -38,6 +38,8 @@
 				"$mainMod, return, exec, uwsm app -- ghostty"
 				 "$mainMod, V, exec, cliphist list | rofi -dmenu -display-columns 2 | cliphist decode | wl-copy"
 				 "$mainMod, G, togglegroup,"
+				 "$mainMod, a, exec,ani-cli --rofi"
+				 "$shiftMod, a, exec,ani-cli --rofi -c"
 				 "$mainMod, right,changegroupactive,r"
 				 "$mainMod, left,changegroupactive,l"
 					",PRINT,exec,hyprshot -m output"

@@ -26,6 +26,7 @@
 	openconnect
 	spotify
 	hyprshot
+	ani-cli
 		clipse
 		fzf
 		discord
