@@ -18,6 +18,8 @@
 			];
 		};
 	};	home.packages = with pkgs; [
+	codex
+	claude-code
 	tmux
 	cliphist
 	google-chrome
@@ -44,10 +46,20 @@
 		# widevine-cdm
 		brightnessctl
 	];
+	programs.git = {
+		enable = true;
+		settings.user = {
+			name = "Priyanshu Pansari";
+			email = "95468479+PriyanshuPansari@users.noreply.github.com";
+		};
+	};
+	programs.gh = {
+		enable = true;
+		settings.git_protocol = "https";
+	};
 	programs.zsh = {
 		enable =true;
 	};
 
 	home.stateVersion = "25.05";
 }
-

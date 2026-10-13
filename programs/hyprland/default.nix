@@ -4,6 +4,7 @@
 	wayland.windowManager.hyprland = {
 		enable = true;
 		systemd.enable = false;
+		configType = "hyprlang";
 
 		settings = {
 			env = [
@@ -23,9 +24,7 @@
 
 			animations.enabled = false;
 
-			gestures = {
-				workspace_swipe = true;
-			};
+			gesture = "3, horizontal, workspace";
 
 			"$mainMod" = "SUPER";
 			"$shiftMod" = "SUPER SHIFT";
