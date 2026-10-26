@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, lib, pkgs, home-manager,... }:
+{ config, lib, pkgs, home-manager, nixpkgs-unstable, ... }:
 
 {
 	imports =
@@ -15,6 +15,17 @@
 		backupFileExtension = "backup";
 		useUserPackages = true;
 	};
+	nixpkgs.overlays = [
+		(final: prev:
+			let
+				unstable = import nixpkgs-unstable {
+					system = prev.stdenv.hostPlatform.system;
+					config.allowUnfree = true;
+				};
+			in {
+				inherit (unstable) codex claude-code;
+			})
+	];
 	hardware.graphics={
 	enable = true;
 	enable32Bit = true;
@@ -93,7 +104,12 @@
 		description = "Priyanshu Pansari";
 		extraGroups = [ "networkmanager" "wheel" ];
 		packages = with pkgs; [];
+		# Self-hosted servers run as system services (servers.nix); no user lingering needed.
+		linger = false;
 	};
+
+# Passwordless sudo for wheel (temporary; lets Claude run rebuilds unattended).
+	security.sudo.wheelNeedsPassword = false;
 
 # Allow unfree packages
 	nixpkgs.config.allowUnfree = true;
@@ -117,6 +133,9 @@
 		withUWSM = true;
 	};
 
+# Run prebuilt dynamically linked binaries (e.g. the Claude CLI for remote sessions).
+	programs.nix-ld.enable = true;
+
 # List services that you want to enable:
 	services.logind.settings.Login = {
 		HandleLidSwitch = "ignore";
@@ -128,7 +147,8 @@
   services.openssh.enable = true;
 
 # Open ports in the firewall.
-networking.firewall.allowedTCPPorts = [ 8765 8877 ];
+# 8765 (fiction-tracker) and 8877 (paper-server) are opened via openFirewall in servers.nix.
+# networking.firewall.allowedTCPPorts = [ ... ];
 # networking.firewall.allowedUDPPorts = [ ... ];
 # Or disable the firewall altogether.
 # networking.firewall.enable = false;

@@ -1,0 +1,9 @@
+keys:
+  - &undead age1g46sjfz0kq5ywt4k3tr4s0tqtjfxk4dzvjx4gekqgxlxxamlh9nq8wawnt
+  - &hope age1k4tte8nzr0c6hrpm82reammx5qta4qjuxw0ldqxymfgf9sjwpa2s3zmtly
+creation_rules:
+  - path_regex: secrets/[^/]+\.yaml$
+    key_groups:
+      - age:
+          - *undead
+          - *hope
