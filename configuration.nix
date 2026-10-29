@@ -108,9 +108,6 @@
 		linger = false;
 	};
 
-# Passwordless sudo for wheel (temporary; lets Claude run rebuilds unattended).
-	security.sudo.wheelNeedsPassword = false;
-
 # Allow unfree packages
 	nixpkgs.config.allowUnfree = true;
 
@@ -144,7 +141,7 @@
 	};
 
 # Enable the OpenSSH daemon.
-  services.openssh.enable = true;
+  # OpenSSH is configured in servers/hardening.nix (keys only, LAN + tailnet).
 
 # Open ports in the firewall.
 # 8765 (fiction-tracker) and 8877 (paper-server) are opened via openFirewall in servers.nix.

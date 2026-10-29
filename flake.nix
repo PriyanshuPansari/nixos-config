@@ -32,7 +32,7 @@
 		specialArgs = attrs;
 		modules = [
 			./configuration.nix
-			./servers.nix
+			./servers
 			attrs.sops-nix.nixosModules.sops
 			attrs.fiction-tracker.nixosModules.default
 			attrs.paper-server.nixosModules.default
